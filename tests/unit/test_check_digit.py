@@ -1,4 +1,5 @@
 import pytest
+
 from container_id.iso6346.check_digit import calculate_check_digit, validate_check_digit
 
 

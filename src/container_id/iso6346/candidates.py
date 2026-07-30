@@ -1,11 +1,10 @@
-from typing import Optional
 
-from container_id.iso6346.types import ContainerID
-from container_id.iso6346.normalize import normalize_container_number
 from container_id.iso6346.check_digit import calculate_check_digit
+from container_id.iso6346.normalize import normalize_container_number
+from container_id.iso6346.types import ContainerID
 
 
-def parse_candidate(raw_candidate: str) -> Optional[ContainerID]:
+def parse_candidate(raw_candidate: str) -> ContainerID | None:
     """
     Parses a normalized or slightly imperfect string into a ContainerID object.
     Returns None if the string cannot be reasonably parsed as a container ID structure.

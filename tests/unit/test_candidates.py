@@ -1,5 +1,6 @@
 from container_id.iso6346.candidates import parse_candidate, score_candidate
 
+
 def test_parse_candidate_valid() -> None:
     cid = parse_candidate("CSQU3054383")
     assert cid is not None

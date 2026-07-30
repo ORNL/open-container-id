@@ -1,5 +1,6 @@
-from container_id.iso6346.types import ContainerID
 from container_id.config.models import ContainerIDConfig
+from container_id.iso6346.types import ContainerID
+
 
 def test_container_id_string_representation() -> None:
     cid = ContainerID("CSQ", "U", "305438", 3)

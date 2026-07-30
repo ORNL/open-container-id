@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class ContainerID:
     """Represents a structured container identifier (e.g. ISO 6346)."""

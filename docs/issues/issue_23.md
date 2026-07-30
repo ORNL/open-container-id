@@ -1,0 +1,7 @@
+# Issue 23: Implement crop-quality and orientation transforms.
+
+## Description
+
+Task from the project plan: Implement crop-quality and orientation transforms.
+
+Please see the `JULES_OPEN_CONTAINER_ID_PROJECT_PLAN.md` for full context and requirements.
