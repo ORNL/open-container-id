@@ -45,6 +45,10 @@ For detailed information on each task, please refer to the corresponding issue f
 - [ ] Issue 28: Implement video inference.
 - [ ] Issue 29: Implement RTSP decoder, bounded queue, and reconnect.
 
+### External Integrations
+
+- [ ] Issue 41: OSCAR OCR Integration API
+
 ### Milestone 8: Deployment and Polish
 - [ ] Issue 30: Implement local FastAPI service.
 - [ ] Issue 31: Implement non-root runtime Docker image.

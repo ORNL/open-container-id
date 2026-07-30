@@ -1321,6 +1321,7 @@ rtsp = [
     { name = "av" },
 ]
 runtime = [
+    { name = "httpx" },
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "numpy", version = "2.5.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "onnxruntime" },
@@ -1348,6 +1349,7 @@ requires-dist = [
     { name = "av", marker = "extra == 'rtsp'" },
     { name = "fastapi", marker = "extra == 'api'" },
     { name = "httpx", marker = "extra == 'dev'" },
+    { name = "httpx", marker = "extra == 'runtime'" },
     { name = "imagehash", marker = "extra == 'train'" },
     { name = "mypy", marker = "extra == 'dev'" },
     { name = "numpy", marker = "extra == 'runtime'" },

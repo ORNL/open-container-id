@@ -76,3 +76,12 @@ uv run container-id rtsp run \
 
 ## Contributing
 See `CONTRIBUTING.md` (to be added) and check the `docs/issues` folder for current tasks that need to be implemented.
+
+### 7. OSCAR Integration
+
+To poll OSCAR for alarming occupancies and submit read container numbers back:
+
+```bash
+# Configure the connection (e.g. by setting env vars for the config)
+uv run container-id oscar-poll
+```

@@ -20,6 +20,7 @@ runtime = [
   "pydantic-settings",
   "pyyaml",
   "typer",
+  "httpx",
   "rich",
 ]
 rtsp = [
