@@ -1,0 +1,75 @@
+[project]
+name = "open-container-id"
+requires-python = ">=3.11,<3.13"
+license = { text = "Apache-2.0" }
+version = "0.1.0"
+description = "Open source container identification system."
+readme = "README.md"
+authors = []
+dependencies = []
+
+[project.scripts]
+container-id = "container_id.cli:app"
+
+[project.optional-dependencies]
+runtime = [
+  "numpy",
+  "opencv-python-headless",
+  "onnxruntime",
+  "pydantic>=2",
+  "pydantic-settings",
+  "pyyaml",
+  "typer",
+  "rich",
+]
+rtsp = [
+  "av",
+]
+api = [
+  "fastapi",
+  "uvicorn[standard]",
+  "python-multipart",
+  "prometheus-client",
+]
+train = [
+  "torch",
+  "torchvision",
+  "rfdetr",
+  "python-doctr[torch]",
+  "pycocotools",
+  "imagehash",
+  "albumentations",
+  "tensorboard",
+]
+export = [
+  "onnx",
+  "onnxruntime",
+]
+dev = [
+  "pytest",
+  "pytest-cov",
+  "pytest-timeout",
+  "mypy",
+  "ruff",
+  "pre-commit",
+  "pip-audit",
+  "types-pyyaml",
+  "httpx",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+ignore_missing_imports = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/container_id"]
