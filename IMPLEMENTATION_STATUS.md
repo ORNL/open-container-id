@@ -1,0 +1,14 @@
+# Implementation Status
+
+- [ ] Repository scaffold
+- [ ] ISO 6346 and core schemas
+- [ ] Dataset registration, extraction, and COCO validation
+- [ ] Audit and filename labels
+- [ ] Canonical dataset and split
+- [ ] OCR crop dataset and review
+- [ ] Detector training and evaluation
+- [ ] OCR training and evaluation
+- [ ] Still-image end-to-end runtime
+- [ ] Tracking, consensus, video, and RTSP
+- [ ] API, Docker, and offline release path
+- [ ] Real training and model release
