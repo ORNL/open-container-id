@@ -102,3 +102,45 @@ def extract_data(
             typer.echo(f"Extracted {len(manifest.members)} files. Manifest written to {manifest_path}")
         except Exception as e: # noqa: BLE001
             typer.echo(f"Extraction failed for {archive.name}: {e}", err=True)
+
+from container_id.data.coco import discover_coco_splits, validate_coco_split
+
+
+@data_app.command(name="validate-coco")
+def validate_coco(source: str = typer.Option(..., help="Path to the extracted COCO dataset source.")) -> None:
+    """Validate a COCO dataset structure."""
+    source_path = Path(source)
+    if not source_path.exists():
+        typer.echo(f"Source directory not found: {source_path}", err=True)
+        raise typer.Exit(1)
+
+    splits = discover_coco_splits(source_path)
+    if not splits:
+        typer.echo(f"No COCO JSON files found in {source_path}", err=True)
+        raise typer.Exit(1)
+
+    all_valid = True
+    for split_name, json_path in splits.items():
+        typer.echo(f"\nValidating split: {split_name} ({json_path})")
+        report = validate_coco_split(json_path, split_name)
+
+        typer.echo(f"  Images: {report.images_count}")
+        typer.echo(f"  Annotations: {report.annotations_count}")
+        typer.echo(f"  Categories: {report.categories_count}")
+
+        if report.images_without_annotations > 0:
+            typer.echo(f"  Note: {report.images_without_annotations} images have no annotations.")
+
+        for warning in report.warnings:
+            typer.echo(f"  WARNING: {warning}", err=True)
+
+        if report.is_valid():
+            typer.echo("  Status: VALID")
+        else:
+            all_valid = False
+            typer.echo("  Status: INVALID")
+            for error in report.errors:
+                typer.echo(f"  ERROR: {error}", err=True)
+
+    if not all_valid:
+        raise typer.Exit(1)
