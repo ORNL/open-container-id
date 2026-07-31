@@ -8,7 +8,7 @@ For detailed information on each task, please refer to the corresponding issue f
 ### Milestone 1 & 2: Project Setup and Core Validation
 - [x] Issue 1: Scaffold package, CLI, quality tooling, and CI.
 - [x] Issue 2: Implement ISO 6346 parser and check digit.
-- [ ] Issue 3: Implement safe dataset archive registration and extraction.
+- [x] Issue 3: Implement safe dataset archive registration and extraction.
 - [ ] Issue 4: Implement COCO validator.
 
 ### Milestone 3: Data Pipeline

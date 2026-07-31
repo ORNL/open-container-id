@@ -2,7 +2,7 @@
 
 - [ ] Repository scaffold
 - [ ] ISO 6346 and core schemas
-- [ ] Dataset registration, extraction, and COCO validation
+- [x] Dataset registration, extraction, and COCO validation
 - [ ] Audit and filename labels
 - [ ] Canonical dataset and split
 - [ ] OCR crop dataset and review

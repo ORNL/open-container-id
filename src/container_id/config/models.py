@@ -20,3 +20,19 @@ class OscarConfig(BaseModel):
     poll_interval_seconds: int = 10
     system_id: str = "default_lane"
     osh_path_root: str = "/api/sensorhub"
+
+
+
+class SourceArchiveConfig(BaseModel):
+    """Configuration for a single dataset archive source."""
+    name: str
+    path: str
+    url: str | None = None
+    version: str | None = None
+    license: str | None = None
+    attribution: str | None = None
+
+class DataSourcesConfig(BaseModel):
+    """Configuration containing multiple source archives."""
+    model_config = ConfigDict(extra="ignore")
+    archives: list[SourceArchiveConfig]
