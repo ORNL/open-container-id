@@ -28,3 +28,14 @@ class CocoDataset(BaseModel):
     images: list[CocoImage]
     annotations: list[CocoAnnotation]
     categories: list[CocoCategory]
+
+class ClassConfirmation(BaseModel):
+    source_dataset_id: str
+    source_class_name: str
+    target_class_name: str
+
+class AuditAcknowledgment(BaseModel):
+    audit_dir: str
+    audit_hash: str
+    confirmations: list[ClassConfirmation]
+    acknowledged_at_utc: str

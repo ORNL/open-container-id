@@ -172,3 +172,20 @@ def audit_data(config: str = typer.Option(..., help="Path to sources YAML config
     except Exception as e: # noqa: BLE001
         typer.echo(f"Audit failed: {e}", err=True)
         raise typer.Exit(1)
+
+from container_id.data.audit import acknowledge_audit
+
+
+@data_app.command(name="acknowledge-audit")
+def cli_acknowledge_audit(
+    audit_dir: str = typer.Option(..., help="Path to the audit directory."),
+    confirm_class: list[str] = typer.Option(..., help="Class semantic confirmation in the format dataset_id:source_class=target_class")
+) -> None:
+    """Acknowledge an audit by confirming class semantics."""
+    audit_path = Path(audit_dir)
+    try:
+        acknowledge_audit(audit_path, confirm_class)
+        typer.echo(f"Audit acknowledged successfully. Wrote to {audit_path / 'acknowledgment.json'}")
+    except Exception as e: # noqa: BLE001
+        typer.echo(f"Failed to acknowledge audit: {e}", err=True)
+        raise typer.Exit(1)
