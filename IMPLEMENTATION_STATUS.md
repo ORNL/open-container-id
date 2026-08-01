@@ -3,7 +3,7 @@
 - [ ] Repository scaffold
 - [ ] ISO 6346 and core schemas
 - [x] Dataset registration, extraction, and COCO validation
-- [ ] Audit and filename labels
+- [x] Audit and filename labels
 - [ ] Canonical dataset and split
 - [ ] OCR crop dataset and review
 - [ ] Detector training and evaluation

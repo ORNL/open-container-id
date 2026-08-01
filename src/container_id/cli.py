@@ -144,3 +144,31 @@ def validate_coco(source: str = typer.Option(..., help="Path to the extracted CO
 
     if not all_valid:
         raise typer.Exit(1)
+
+import datetime
+
+from container_id.data.audit import run_dataset_audit
+from container_id.data.contact_sheets import generate_contact_sheets
+
+
+@data_app.command(name="audit")
+def audit_data(config: str = typer.Option(..., help="Path to sources YAML config.")) -> None:
+    """Audit registered dataset archives and generate contact sheets."""
+    config_path = Path(config)
+    with open(config_path, "r") as f:
+        import yaml
+        yaml_data = yaml.safe_load(f)
+
+    sources_config = DataSourcesConfig(**yaml_data)
+
+    utc_run_id = datetime.datetime.now(datetime.UTC).strftime("%Y%m%dT%H%M%SZ")
+    output_dir = Path(f"artifacts/audit/{utc_run_id}")
+
+    typer.echo(f"Running audit. Output will be saved to {output_dir}")
+    try:
+        run_dataset_audit(sources_config, output_dir)
+        generate_contact_sheets(output_dir)
+        typer.echo("Audit completed successfully.")
+    except Exception as e: # noqa: BLE001
+        typer.echo(f"Audit failed: {e}", err=True)
+        raise typer.Exit(1)
