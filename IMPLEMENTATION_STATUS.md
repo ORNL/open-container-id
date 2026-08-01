@@ -4,7 +4,7 @@
 - [ ] ISO 6346 and core schemas
 - [x] Dataset registration, extraction, and COCO validation
 - [x] Audit and filename labels
-- [ ] Canonical dataset and split
+- [x] Canonical dataset and split
 - [ ] OCR crop dataset and review
 - [ ] Detector training and evaluation
 - [ ] OCR training and evaluation

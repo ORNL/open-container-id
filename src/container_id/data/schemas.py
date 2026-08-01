@@ -48,3 +48,42 @@ class DuplicateGroup(BaseModel):
 class DuplicateManifest(BaseModel):
     dataset_id: str
     groups: list[DuplicateGroup]
+
+class CanonicalAnnotation(BaseModel):
+    source_annotation_id: int
+    source_category: str
+    canonical_category: str
+    bbox_xywh: list[float]
+    bbox_area: float
+    orientation_class: str
+    review_status: str
+
+class CanonicalSample(BaseModel):
+    schema_version: int = 1
+    sample_id: str
+    source_dataset_id: str
+    source_split: str
+    source_image_id: int
+    exported_file_name: str
+    original_file_name: str
+    source_image_path: str
+    image_sha256: str
+    perceptual_hash: str | None = None
+    width: int
+    height: int
+    raw_filename_label: str
+    normalized_label: str | None
+    label_status: str
+    iso_structure_valid: bool
+    check_digit_valid: bool
+    owner_prefix: str | None
+    equipment_category: str | None
+    serial_number: str | None
+    check_digit: str | None
+    annotations: list[CanonicalAnnotation]
+    exact_duplicate_group: str | None = None
+    near_duplicate_group: str | None = None
+    source_family_group: str | None = None
+    split_group: str | None = None
+    canonical_split: str | None = None
+    license: str | None = None
