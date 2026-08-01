@@ -19,7 +19,7 @@ For detailed information on each task, please refer to the corresponding issue f
 - [x] Issue 9: Implement group-aware deterministic split.
 
 ### Milestone 4: Training Setup
-- [ ] Issue 10: Build canonical one-class COCO dataset.
+- [x] Issue 10: Build canonical one-class COCO dataset.
 - [ ] Issue 11: Build OCR crop dataset and docTR labels.
 - [ ] Issue 12: Implement manual review store and UI/CSV flow.
 - [ ] Issue 13: Implement MPS device doctor and training run manifests.

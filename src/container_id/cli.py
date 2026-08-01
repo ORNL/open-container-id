@@ -221,3 +221,31 @@ def cli_find_duplicates(
     except Exception as e: # noqa: BLE001
         typer.echo(f"Failed to run deduplication: {e}", err=True)
         raise typer.Exit(1)
+
+from container_id.config.models import CanonicalConfig
+from container_id.data.canonical import build_canonical_dataset
+
+
+@data_app.command(name="build-canonical")
+def cli_build_canonical(
+    config: str = typer.Option(..., help="Path to canonical YAML config.")
+) -> None:
+    """Build the canonical one-class COCO detection dataset."""
+    config_path = Path(config)
+
+    # Normally we load YAML but we'll mock it if file doesn't exist
+    if not config_path.exists():
+        typer.echo(f"Warning: config not found at {config_path}, using defaults.", err=True)
+        canonical_config = CanonicalConfig()
+    else:
+        with open(config_path, "r") as f:
+            import yaml
+            yaml_data = yaml.safe_load(f)
+        canonical_config = CanonicalConfig(**yaml_data)
+
+    try:
+        summary = build_canonical_dataset(canonical_config)
+        typer.echo(f"Successfully built canonical dataset: {summary['message']}")
+    except Exception as e: # noqa: BLE001
+        typer.echo(f"Failed to build canonical dataset: {e}", err=True)
+        raise typer.Exit(1)

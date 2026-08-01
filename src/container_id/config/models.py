@@ -36,3 +36,16 @@ class DataSourcesConfig(BaseModel):
     """Configuration containing multiple source archives."""
     model_config = ConfigDict(extra="ignore")
     archives: list[SourceArchiveConfig]
+
+class CanonicalConfig(BaseModel):
+    """Configuration for building the canonical dataset."""
+    model_config = ConfigDict(extra="ignore")
+
+    source_registry: str = "data/manifests/source_registry.local.json"
+    audit_acknowledgment: str = "artifacts/audit/latest/acknowledgment.json"
+    output_dir: str = "data/processed/detection-v1"
+    link_mode: str = "copy" # 'hardlink' or 'copy'
+    random_seed: int = 6346
+    train_pct: float = 0.8
+    valid_pct: float = 0.1
+    test_pct: float = 0.1
