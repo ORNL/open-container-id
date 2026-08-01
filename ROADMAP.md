@@ -12,7 +12,7 @@ For detailed information on each task, please refer to the corresponding issue f
 - [x] Issue 4: Implement COCO validator.
 
 ### Milestone 3: Data Pipeline
-- [ ] Issue 5: Implement source filename label parser.
+- [x] Issue 5: Implement source filename label parser.
 - [ ] Issue 6: Build dataset audit and contact sheets.
 - [ ] Issue 7: Add PranW class-semantic confirmation gate.
 - [ ] Issue 8: Implement exact and perceptual duplicate grouping.
