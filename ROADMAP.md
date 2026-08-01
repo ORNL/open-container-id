@@ -15,7 +15,7 @@ For detailed information on each task, please refer to the corresponding issue f
 - [x] Issue 5: Implement source filename label parser.
 - [x] Issue 6: Build dataset audit and contact sheets.
 - [x] Issue 7: Add PranW class-semantic confirmation gate.
-- [ ] Issue 8: Implement exact and perceptual duplicate grouping.
+- [x] Issue 8: Implement exact and perceptual duplicate grouping.
 - [ ] Issue 9: Implement group-aware deterministic split.
 
 ### Milestone 4: Training Setup

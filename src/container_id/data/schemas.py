@@ -39,3 +39,12 @@ class AuditAcknowledgment(BaseModel):
     audit_hash: str
     confirmations: list[ClassConfirmation]
     acknowledged_at_utc: str
+
+class DuplicateGroup(BaseModel):
+    group_id: str
+    members: list[str] # List of image file paths or image IDs
+    reason: str # 'exact_hash', 'phash_near_duplicate', 'source_family'
+
+class DuplicateManifest(BaseModel):
+    dataset_id: str
+    groups: list[DuplicateGroup]

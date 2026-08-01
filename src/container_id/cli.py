@@ -189,3 +189,35 @@ def cli_acknowledge_audit(
     except Exception as e: # noqa: BLE001
         typer.echo(f"Failed to acknowledge audit: {e}", err=True)
         raise typer.Exit(1)
+
+from container_id.data.dedupe import deduplicate_dataset
+
+
+@data_app.command(name="find-duplicates")
+def cli_find_duplicates(
+    dataset_id: str = typer.Option(..., help="ID of the dataset."),
+    extracted_dir: str = typer.Option(..., help="Path to the extracted dataset directory.")
+) -> None:
+    """Finds exact and near duplicates in an extracted dataset."""
+    target_dir = Path(extracted_dir)
+    if not target_dir.exists():
+        typer.echo(f"Directory not found: {target_dir}", err=True)
+        raise typer.Exit(1)
+
+    typer.echo("Scanning for image files...")
+    image_paths: list[Path] = []
+    for ext in ["*.jpg", "*.jpeg", "*.png", "*.webp"]:
+        image_paths.extend(target_dir.rglob(ext))
+        image_paths.extend(target_dir.rglob(ext.upper()))
+
+    typer.echo(f"Found {len(image_paths)} images. Running deduplication...")
+
+    try:
+        manifest = deduplicate_dataset(dataset_id, image_paths)
+        output_path = target_dir / "duplicate_manifest.json"
+        with open(output_path, "w") as f:
+            f.write(manifest.model_dump_json(indent=2))
+        typer.echo(f"Found {len(manifest.groups)} duplicate groups. Wrote to {output_path}")
+    except Exception as e: # noqa: BLE001
+        typer.echo(f"Failed to run deduplication: {e}", err=True)
+        raise typer.Exit(1)
