@@ -249,3 +249,30 @@ def cli_build_canonical(
     except Exception as e: # noqa: BLE001
         typer.echo(f"Failed to build canonical dataset: {e}", err=True)
         raise typer.Exit(1)
+
+from container_id.config.models import OcrConfig
+from container_id.data.ocr_crops import build_ocr_dataset
+
+
+@data_app.command(name="build-ocr")
+def cli_build_ocr(
+    config: str = typer.Option(..., help="Path to OCR YAML config.")
+) -> None:
+    """Build the OCR crop dataset and docTR labels."""
+    config_path = Path(config)
+
+    if not config_path.exists():
+        typer.echo(f"Warning: config not found at {config_path}, using defaults.", err=True)
+        ocr_config = OcrConfig()
+    else:
+        with open(config_path, "r") as f:
+            import yaml
+            yaml_data = yaml.safe_load(f)
+        ocr_config = OcrConfig(**yaml_data)
+
+    try:
+        summary = build_ocr_dataset(ocr_config)
+        typer.echo(f"Successfully built OCR dataset: {summary['message']}")
+    except Exception as e: # noqa: BLE001
+        typer.echo(f"Failed to build OCR dataset: {e}", err=True)
+        raise typer.Exit(1)

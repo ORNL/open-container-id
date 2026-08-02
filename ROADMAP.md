@@ -20,7 +20,7 @@ For detailed information on each task, please refer to the corresponding issue f
 
 ### Milestone 4: Training Setup
 - [x] Issue 10: Build canonical one-class COCO dataset.
-- [ ] Issue 11: Build OCR crop dataset and docTR labels.
+- [x] Issue 11: Build OCR crop dataset and docTR labels.
 - [ ] Issue 12: Implement manual review store and UI/CSV flow.
 - [ ] Issue 13: Implement MPS device doctor and training run manifests.
 

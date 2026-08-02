@@ -5,7 +5,7 @@
 - [x] Dataset registration, extraction, and COCO validation
 - [x] Audit and filename labels
 - [x] Canonical dataset and split
-- [ ] OCR crop dataset and review
+- [x] OCR crop dataset and review
 - [ ] Detector training and evaluation
 - [ ] OCR training and evaluation
 - [ ] Still-image end-to-end runtime

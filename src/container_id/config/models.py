@@ -49,3 +49,12 @@ class CanonicalConfig(BaseModel):
     train_pct: float = 0.8
     valid_pct: float = 0.1
     test_pct: float = 0.1
+
+class OcrConfig(BaseModel):
+    """Configuration for building OCR datasets."""
+    model_config = ConfigDict(extra="ignore")
+
+    canonical_dir: str = "data/processed/detection-v1"
+    output_dir: str = "data/processed/ocr-v1"
+    padding_fraction: float = 0.08
+    include_invalid_confirmed: bool = False
