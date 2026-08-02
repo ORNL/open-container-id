@@ -87,3 +87,18 @@ class CanonicalSample(BaseModel):
     split_group: str | None = None
     canonical_split: str | None = None
     license: str | None = None
+
+class ReviewRecord(BaseModel):
+    review_id: str
+    sample_id: str
+    annotation_id: str | None = None
+    queue: str
+    current_status: str
+    proposed_label: str | None = None
+    reviewed_label: str | None = None
+    decision: str | None = None
+    reviewer: str | None = None
+    reviewed_at_utc: str | None = None
+    notes: str | None = None
+    audit_run_id: str | None = None
+    source_image_sha256: str | None = None

@@ -276,3 +276,47 @@ def cli_build_ocr(
     except Exception as e: # noqa: BLE001
         typer.echo(f"Failed to build OCR dataset: {e}", err=True)
         raise typer.Exit(1)
+
+import uuid
+
+from container_id.data.review_store import ReviewStore
+from container_id.data.schemas import ReviewRecord
+
+
+@data_app.command(name="review")
+def cli_review(
+    audit_dir: str = typer.Option(..., help="Path to the audit directory."),
+    export_csv: str = typer.Option(None, help="Export current reviews to CSV."),
+    import_csv: str = typer.Option(None, help="Import review decisions from CSV."),
+    generate_stub: bool = typer.Option(False, help="Generate a stub review record for testing.")
+) -> None:
+    """Manage the manual review store and UI/CSV flow."""
+    audit_path = Path(audit_dir)
+    store_path = audit_path / "reviews.jsonl"
+
+    store = ReviewStore(store_path)
+
+    if generate_stub:
+        stub = ReviewRecord(
+            review_id=str(uuid.uuid4()),
+            sample_id="stub_sample",
+            queue="filename_no_candidate",
+            current_status="pending",
+            proposed_label=None
+        )
+        store.add_or_update(stub)
+        store.save()
+        typer.echo(f"Added stub review record to {store_path}")
+
+    if export_csv:
+        export_path = Path(export_csv)
+        store.export_csv(export_path)
+        typer.echo(f"Exported {len(store.records)} records to {export_path}")
+
+    if import_csv:
+        import_path = Path(import_csv)
+        count = store.import_csv(import_path)
+        typer.echo(f"Imported and updated {count} review decisions from {import_path}")
+
+    pending = len(store.get_pending())
+    typer.echo(f"Review store contains {len(store.records)} total records ({pending} pending).")
