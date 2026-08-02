@@ -320,3 +320,27 @@ def cli_review(
 
     pending = len(store.get_pending())
     typer.echo(f"Review store contains {len(store.records)} total records ({pending} pending).")
+
+@app.command(name="doctor")
+def cli_doctor() -> None:
+    """Run environment health checks, checking MPS availability and path writability."""
+    from container_id.training.device import run_doctor
+
+    typer.echo("Running environment doctor...")
+    report = run_doctor()
+
+    typer.echo("\n--- Device Info ---")
+    for k, v in report["device_info"].items():
+        typer.echo(f"{k}: {v}")
+
+    typer.echo("\n--- Checks ---")
+    for k, v in report["checks"].items():
+        if k == "writable_directories":
+            typer.echo("Writable Directories:")
+            for p, is_w in v.items():
+                typer.echo(f"  {p}: {is_w}")
+        else:
+            typer.echo(f"{k}: {v}")
+
+    if not report["device_info"].get("mps_available", False) and not report["device_info"].get("cuda_available", False):
+        typer.echo("\nWARNING: No hardware acceleration (MPS or CUDA) found. Training will use CPU and be very slow.", err=True)

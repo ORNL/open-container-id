@@ -102,3 +102,12 @@ class ReviewRecord(BaseModel):
     notes: str | None = None
     audit_run_id: str | None = None
     source_image_sha256: str | None = None
+
+class RunManifest(BaseModel):
+    run_id: str
+    run_type: str
+    started_at_utc: str
+    dataset_fingerprint: str | None = None
+    config: dict[str, Any] | None = None
+    device_info: dict[str, Any] | None = None
+    fallback_warnings: list[str] = []

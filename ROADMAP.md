@@ -22,7 +22,7 @@ For detailed information on each task, please refer to the corresponding issue f
 - [x] Issue 10: Build canonical one-class COCO dataset.
 - [x] Issue 11: Build OCR crop dataset and docTR labels.
 - [x] Issue 12: Implement manual review store and UI/CSV flow.
-- [ ] Issue 13: Implement MPS device doctor and training run manifests.
+- [x] Issue 13: Implement MPS device doctor and training run manifests.
 
 ### Milestone 5: Model Training & Export
 - [ ] Issue 14: Implement RF-DETR Small training adapter.
