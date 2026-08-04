@@ -7,7 +7,14 @@ from container_id.training.device import get_device_info
 
 
 class TrainingRun:
-    def __init__(self, run_dir: Path, run_type: str, config: dict[str, Any], dataset_fingerprint: str | None = None, allow_mps_cpu_fallback: bool = False):
+    def __init__(
+        self,
+        run_dir: Path,
+        run_type: str,
+        config: dict[str, Any],
+        dataset_fingerprint: str | None = None,
+        allow_mps_cpu_fallback: bool = False,
+    ):
         self.run_dir = Path(run_dir)
         self.run_dir.mkdir(parents=True, exist_ok=True)
 
@@ -21,7 +28,7 @@ class TrainingRun:
             dataset_fingerprint=dataset_fingerprint,
             config=config,
             device_info=device_info,
-            fallback_warnings=[]
+            fallback_warnings=[],
         )
         self.save_manifest()
 

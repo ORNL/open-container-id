@@ -13,7 +13,7 @@ def generate_sample_id(sample: CanonicalSample) -> str:
         f"{sample.exported_file_name}\0"
         f"{sample.image_sha256}"
     )
-    return hashlib.sha256(s.encode('utf-8')).hexdigest()[:24]
+    return hashlib.sha256(s.encode("utf-8")).hexdigest()[:24]
 
 
 def build_split_groups(samples: list[CanonicalSample]) -> dict[str, str]:
@@ -87,7 +87,7 @@ def assign_canonical_splits(
     samples: list[CanonicalSample],
     seed: int = 6346,
     train_pct: float = 0.8,
-    valid_pct: float = 0.1
+    valid_pct: float = 0.1,
 ) -> list[CanonicalSample]:
     """
     Assigns a canonical split (train, valid, test) to each sample based on its unified group.

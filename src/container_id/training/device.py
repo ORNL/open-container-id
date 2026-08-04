@@ -20,6 +20,7 @@ def get_device_info(allow_mps_cpu_fallback: bool = False) -> tuple[str, dict[str
 
     try:
         import torch
+
         info["pytorch_version"] = torch.__version__
         info["mps_built"] = torch.backends.mps.is_built()
         info["mps_available"] = torch.backends.mps.is_available()
@@ -43,23 +44,28 @@ def get_device_info(allow_mps_cpu_fallback: bool = False) -> tuple[str, dict[str
     info["allow_mps_cpu_fallback"] = allow_mps_cpu_fallback
     return selected, info
 
+
 def run_doctor() -> dict[str, Any]:
     """Runs a series of health checks for the training environment."""
     _selected, info = get_device_info()
 
     checks = {
-        "python_architecture": info["machine"] == "arm64" if platform.system() == "Darwin" else True,
+        "python_architecture": info["machine"] == "arm64"
+        if platform.system() == "Darwin"
+        else True,
         "mps_available": info["mps_available"],
     }
 
     try:
         import av  # noqa: F401
+
         checks["pyav_available"] = True
     except ImportError:
         checks["pyav_available"] = False
 
     try:
         import onnxruntime
+
         checks["onnxruntime_providers"] = onnxruntime.get_available_providers()
     except ImportError:
         checks["onnxruntime_providers"] = []
@@ -74,5 +80,6 @@ def run_doctor() -> dict[str, Any]:
 
     checks["writable_directories"] = writable
     return {"device_info": info, "checks": checks}
+
 
 from pathlib import Path

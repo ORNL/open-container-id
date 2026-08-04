@@ -13,7 +13,7 @@ def run_dataset_audit(config: DataSourcesConfig, output_dir: Path) -> dict[str, 
     report = {
         "status": "success",
         "archives_audited": len(config.archives),
-        "message": "Audit completed. (Not fully implemented)"
+        "message": "Audit completed. (Not fully implemented)",
     }
 
     with open(output_dir / "audit_report.json", "w") as f:
@@ -24,6 +24,7 @@ def run_dataset_audit(config: DataSourcesConfig, output_dir: Path) -> dict[str, 
         f.write(f"Audited {len(config.archives)} archives.\n")
 
     return report
+
 
 import datetime
 
@@ -55,17 +56,19 @@ def acknowledge_audit(audit_dir: Path, confirmations: list[str]) -> AuditAcknowl
                 ClassConfirmation(
                     source_dataset_id=dataset_id,
                     source_class_name=source_class,
-                    target_class_name=target_class
+                    target_class_name=target_class,
                 )
             )
         except ValueError:
-            raise ValueError(f"Invalid confirmation format '{conf}'. Expected format: 'dataset_id:source_class=target_class'")
+            raise ValueError(
+                f"Invalid confirmation format '{conf}'. Expected format: 'dataset_id:source_class=target_class'"
+            )
 
     ack = AuditAcknowledgment(
         audit_dir=str(audit_dir),
         audit_hash=audit_hash,
         confirmations=parsed_confirmations,
-        acknowledged_at_utc=datetime.datetime.now(datetime.UTC).isoformat()
+        acknowledged_at_utc=datetime.datetime.now(datetime.UTC).isoformat(),
     )
 
     ack_path = audit_dir / "acknowledgment.json"
