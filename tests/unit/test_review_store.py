@@ -10,10 +10,7 @@ def test_review_store_lifecycle(tmp_path: Path) -> None:
     store = ReviewStore(store_path)
 
     r1 = ReviewRecord(
-        review_id="r1",
-        sample_id="s1",
-        queue="test",
-        current_status="pending"
+        review_id="r1", sample_id="s1", queue="test", current_status="pending"
     )
     store.add_or_update(r1)
     store.save()
@@ -24,16 +21,14 @@ def test_review_store_lifecycle(tmp_path: Path) -> None:
     assert "r1" in store2.records
     assert len(store2.get_pending()) == 1
 
+
 def test_review_store_csv_flow(tmp_path: Path) -> None:
     store_path = tmp_path / "reviews.jsonl"
     csv_path = tmp_path / "export.csv"
 
     store = ReviewStore(store_path)
     r1 = ReviewRecord(
-        review_id="r1",
-        sample_id="s1",
-        queue="test",
-        current_status="pending"
+        review_id="r1", sample_id="s1", queue="test", current_status="pending"
     )
     store.add_or_update(r1)
 

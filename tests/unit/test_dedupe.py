@@ -14,10 +14,12 @@ def create_image(path: Path, color: str = "white") -> None:
     img = Image.new("RGB", (100, 100), color=color)
     img.save(path)
 
+
 def create_random_image(path: Path) -> None:
     arr = np.random.randint(0, 255, (100, 100, 3), dtype=np.uint8)
     img = Image.fromarray(arr)
     img.save(path)
+
 
 def test_find_exact_duplicates(tmp_path: Path) -> None:
     img1 = tmp_path / "img1.jpg"
@@ -35,6 +37,7 @@ def test_find_exact_duplicates(tmp_path: Path) -> None:
     assert str(img1) in groups[0].members
     assert str(img2) in groups[0].members
     assert groups[0].reason == "exact_hash"
+
 
 def test_find_near_duplicates(tmp_path: Path) -> None:
     img1 = tmp_path / "img1.jpg"
@@ -58,6 +61,7 @@ def test_find_near_duplicates(tmp_path: Path) -> None:
     assert str(img3) in groups[0].members
     assert str(img4) not in groups[0].members
     assert groups[0].reason == "phash_near_duplicate"
+
 
 def test_deduplicate_dataset(tmp_path: Path) -> None:
     img1 = tmp_path / "img1.jpg"

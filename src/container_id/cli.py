@@ -5,7 +5,12 @@ app = typer.Typer(help="Open Container ID CLI")
 evaluate_app = typer.Typer()
 app.add_typer(evaluate_app, name="evaluate", help="Evaluation commands.")
 
-train_app = typer.Typer()
+from container_id.export import app as export_app
+
+app.add_typer(export_app, name="export", help="Export commands.")
+
+from container_id.training import app as train_app
+
 app.add_typer(train_app, name="train", help="Training commands.")
 
 

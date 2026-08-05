@@ -7,7 +7,7 @@ def create_sample(
     exact_group: str | None = None,
     near_group: str | None = None,
     family_group: str | None = None,
-    normalized_label: str | None = None
+    normalized_label: str | None = None,
 ) -> CanonicalSample:
     return CanonicalSample(
         sample_id=sample_id,
@@ -32,8 +32,9 @@ def create_sample(
         annotations=[],
         exact_duplicate_group=exact_group,
         near_duplicate_group=near_group,
-        source_family_group=family_group
+        source_family_group=family_group,
     )
+
 
 def test_build_split_groups() -> None:
     # We want to test transitive grouping.
@@ -60,6 +61,7 @@ def test_build_split_groups() -> None:
     # s5 should be isolated
     assert groups["s5"] != groups["s1"]
 
+
 def test_assign_canonical_splits() -> None:
     samples = []
     # Create 100 isolated samples
@@ -73,7 +75,9 @@ def test_assign_canonical_splits() -> None:
     assigned = assign_canonical_splits(samples, seed=42)
 
     # Verify every linked sample ended up in the same split
-    linked_splits = {s.canonical_split for s in assigned if s.sample_id.startswith("linked_")}
+    linked_splits = {
+        s.canonical_split for s in assigned if s.sample_id.startswith("linked_")
+    }
     assert len(linked_splits) == 1
 
     # Count splits
@@ -86,4 +90,6 @@ def test_assign_canonical_splits() -> None:
     # but the greedy algorithm should get close or at least put them in *some* valid state
     # without failing.
     assert train + valid + test == 150
-    assert train >= 50 # At least the big group or a bunch of isolated ones went to train
+    assert (
+        train >= 50
+    )  # At least the big group or a bunch of isolated ones went to train

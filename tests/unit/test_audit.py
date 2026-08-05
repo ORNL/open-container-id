@@ -12,9 +12,11 @@ def test_run_dataset_audit(tmp_path: Path) -> None:
     assert (tmp_path / "audit_report.json").exists()
     assert (tmp_path / "audit_report.md").exists()
 
+
 def test_generate_contact_sheets(tmp_path: Path) -> None:
     generate_contact_sheets(tmp_path)
     assert tmp_path.exists()
+
 
 def test_acknowledge_audit(tmp_path: Path) -> None:
     import json

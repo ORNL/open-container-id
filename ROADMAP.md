@@ -25,10 +25,10 @@ For detailed information on each task, please refer to the corresponding issue f
 - [x] Issue 13: Implement MPS device doctor and training run manifests.
 
 ### Milestone 5: Model Training & Export
-- [ ] Issue 14: Implement RF-DETR Small training adapter.
-- [ ] Issue 15: Implement detector metrics and threshold calibration.
-- [ ] Issue 16: Implement detector ONNX export and parity tests.
-- [ ] Issue 17: Implement docTR CRNN training adapter.
+- [x] Issue 14: Implement RF-DETR Small training adapter.
+- [x] Issue 15: Implement detector metrics and threshold calibration.
+- [x] Issue 16: Implement detector ONNX export and parity tests.
+- [x] Issue 17: Implement docTR CRNN training adapter.
 - [ ] Issue 18: Implement OCR metrics and error analysis.
 - [ ] Issue 19: Implement recognizer ONNX export and parity tests.
 

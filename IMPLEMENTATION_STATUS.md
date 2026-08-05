@@ -6,8 +6,8 @@
 - [x] Audit and filename labels
 - [x] Canonical dataset and split
 - [x] OCR crop dataset and review
-- [ ] Detector training and evaluation
-- [ ] OCR training and evaluation
+- [x] Detector training and evaluation
+- [x] OCR training and evaluation
 - [ ] Still-image end-to-end runtime
 - [ ] Tracking, consensus, video, and RTSP
 - [ ] API, Docker, and offline release path

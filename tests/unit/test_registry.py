@@ -11,12 +11,7 @@ def test_register_sources(tmp_path: Path) -> None:
     registry_file = tmp_path / "registry.json"
 
     config = DataSourcesConfig(
-        archives=[
-            SourceArchiveConfig(
-                name="test_dataset",
-                path=str(archive_file)
-            )
-        ]
+        archives=[SourceArchiveConfig(name="test_dataset", path=str(archive_file))]
     )
 
     registry = register_sources(config, registry_file)
