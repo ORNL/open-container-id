@@ -1,7 +1,5 @@
-import pytest
-from pathlib import Path
-from container_id.training.detector_rfdetr import DetectorTrainConfig, train_detector
-import yaml
+from container_id.training.detector_rfdetr import train_detector
+
 
 def test_detector_rfdetr_smoke(tmp_path):
     config = {
@@ -9,12 +7,12 @@ def test_detector_rfdetr_smoke(tmp_path):
             "family": "rfdetr",
             "variant": "small",
             "pretrained": False,
-            "class_names": ["container_number"]
+            "class_names": ["container_number"],
         },
         "data": {
             "dataset_dir": str(tmp_path / "mock_data"),
             "dataset_manifest": str(tmp_path / "mock_data" / "manifest.jsonl"),
-            "split_manifest": str(tmp_path / "mock_data" / "split_manifest.jsonl")
+            "split_manifest": str(tmp_path / "mock_data" / "split_manifest.jsonl"),
         },
         "training": {
             "device": "cpu",
@@ -30,23 +28,22 @@ def test_detector_rfdetr_smoke(tmp_path):
             "tensorboard": False,
             "wandb": False,
             "gradient_checkpointing": False,
-            "resolution": "default"
+            "resolution": "default",
         },
-        "output": {
-            "root": str(tmp_path / "runs")
-        }
+        "output": {"root": str(tmp_path / "runs")},
     }
 
     # We expect it to mock train since the dataset dir doesn't exist
     train_detector(config)
 
-    run_dir = list((tmp_path / "runs").iterdir())[0]
+    run_dir = next(iter((tmp_path / "runs").iterdir()))
     assert run_dir.is_dir()
 
     manifest_file = run_dir / "run_manifest.json"
     assert manifest_file.exists()
 
     import json
+
     with open(manifest_file) as f:
         manifest = json.load(f)
     assert manifest["status"] == "completed"

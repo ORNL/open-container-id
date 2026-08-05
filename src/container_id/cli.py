@@ -2,8 +2,8 @@ import typer
 
 app = typer.Typer(help="Open Container ID CLI")
 
-data_app = typer.Typer()
-app.add_typer(data_app, name="data", help="Data commands.")
+evaluate_app = typer.Typer()
+app.add_typer(evaluate_app, name="evaluate", help="Evaluation commands.")
 
 train_app = typer.Typer()
 app.add_typer(train_app, name="train", help="Training commands.")
@@ -424,4 +424,22 @@ def detector(config: str = typer.Option(..., help="Path to training config")):
         typer.echo("Detector training finished.")
     except Exception as e:  # noqa: BLE001
         typer.echo(f"Detector training failed: {e}", err=True)
+        raise typer.Exit(1)
+
+
+from container_id.evaluation.detector import evaluate_detector
+
+
+@evaluate_app.command("detector")
+def cli_evaluate_detector(
+    run_dir: str = typer.Option(..., help="Path to the training run directory."),
+):
+    """Evaluate the detector model."""
+    try:
+        evaluate_detector(run_dir)
+        typer.echo(
+            f"Detector evaluation finished. Results saved in {run_dir}/evaluation/detector/"
+        )
+    except Exception as e:  # noqa: BLE001
+        typer.echo(f"Detector evaluation failed: {e}", err=True)
         raise typer.Exit(1)
