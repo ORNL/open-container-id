@@ -25,10 +25,6 @@ def version() -> None:
     typer.echo("0.1.0")
 
 
-if __name__ == "__main__":
-    app()
-
-
 @app.command()
 def oscar_poll() -> None:
     """Poll OSCAR for alarming occupancies and submit container numbers."""
@@ -414,11 +410,6 @@ def cli_doctor() -> None:
         )
 
 
-
-
-
-
-
 from container_id.evaluation.detector import evaluate_detector
 
 
@@ -453,3 +444,7 @@ def cli_evaluate_ocr(
     except Exception as e:  # noqa: BLE001
         typer.echo(f"OCR evaluation failed: {e}", err=True)
         raise typer.Exit(1)
+
+
+if __name__ == "__main__":
+    app()
