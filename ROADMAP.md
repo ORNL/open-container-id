@@ -34,7 +34,7 @@ For detailed information on each task, please refer to the corresponding issue f
 
 ### Milestone 6: Runtime and API
 - [x] Issue 20: Implement model-bundle manifest and verification.
-- [ ] Issue 21: Implement ONNX detector runtime.
+- [x] Issue 21: Implement ONNX detector runtime.
 - [ ] Issue 22: Implement ONNX recognizer runtime.
 - [ ] Issue 23: Implement crop-quality and orientation transforms.
 - [ ] Issue 25: Implement still-image and directory inference CLI.
