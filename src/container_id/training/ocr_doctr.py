@@ -6,7 +6,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-import torch
 import yaml
 from pydantic import BaseModel, ConfigDict
 
@@ -112,7 +111,9 @@ def write_run_manifest(
         "os": platform.system(),
         "arch": platform.machine(),
         "python_version": platform.python_version(),
-        "pytorch_version": torch.__version__,
+        "pytorch_version": __import__("torch").__version__
+        if __import__("importlib.util").util.find_spec("torch")
+        else None,
         "device": device,
         "device_info": device_info,
         "config": config,
