@@ -1,5 +1,7 @@
 import json
+
 from container_id.evaluation.ocr import evaluate_ocr
+
 
 def test_evaluate_ocr_mock(tmp_path):
     run_dir = tmp_path / "runs" / "doctr-crnn-123"

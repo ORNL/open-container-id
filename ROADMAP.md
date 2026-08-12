@@ -33,7 +33,7 @@ For detailed information on each task, please refer to the corresponding issue f
 - [x] Issue 19: Implement recognizer ONNX export and parity tests.
 
 ### Milestone 6: Runtime and API
-- [ ] Issue 20: Implement model-bundle manifest and verification.
+- [x] Issue 20: Implement model-bundle manifest and verification.
 - [ ] Issue 21: Implement ONNX detector runtime.
 - [ ] Issue 22: Implement ONNX recognizer runtime.
 - [ ] Issue 23: Implement crop-quality and orientation transforms.

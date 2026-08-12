@@ -446,5 +446,51 @@ def cli_evaluate_ocr(
         raise typer.Exit(1)
 
 
+
+bundle_app = typer.Typer()
+app.add_typer(bundle_app, name="bundle", help="Model bundle commands.")
+
+from container_id.export.bundle import build_bundle, verify_bundle
+
+
+@bundle_app.command("build")
+def cli_bundle_build(
+    detector: str = typer.Option(..., help="Path to exported detector.onnx"),
+    recognizer: str = typer.Option(..., help="Path to exported recognizer.onnx"),
+    config: str = typer.Option(..., help="Path to runtime default config"),
+    output: str = typer.Option(..., help="Path to output bundle directory")
+):
+    """Build a deployable model bundle."""
+    try:
+        build_bundle(detector, recognizer, config, output)
+    except Exception as e: # noqa: BLE001
+        typer.echo(f"Bundle build failed: {e}", err=True)
+        raise typer.Exit(1)
+
+@bundle_app.command("verify")
+def cli_bundle_verify(bundle_dir: str = typer.Argument(..., help="Path to bundle directory")):
+    """Verify a deployable model bundle."""
+    try:
+        verify_bundle(bundle_dir)
+    except Exception as e: # noqa: BLE001
+        typer.echo(f"Bundle verification failed: {e}", err=True)
+        raise typer.Exit(1)
+
+@bundle_app.command("inspect")
+def cli_bundle_inspect(bundle_dir: str = typer.Argument(..., help="Path to bundle directory")):
+    """Inspect a deployable model bundle."""
+    # Dummy inspect command for now to satisfy CLI structure reqs
+    typer.echo(f"Inspecting bundle at {bundle_dir}...")
+    try:
+        verify_bundle(bundle_dir)
+        import json
+        from pathlib import Path
+        with open(Path(bundle_dir) / "manifest.json") as f:
+            manifest = json.load(f)
+            typer.echo(json.dumps(manifest, indent=2))
+    except Exception as e: # noqa: BLE001
+        typer.echo(f"Bundle inspection failed: {e}", err=True)
+        raise typer.Exit(1)
+
 if __name__ == "__main__":
     app()
