@@ -60,7 +60,7 @@ def oscar_poll() -> None:
                 container_number=mock_container_number,
             )
 
-    except Exception as e:  # noqa: BLE001  # noqa: BLE001
+    except Exception as e:  # noqa: BLE001
         typer.echo(f"Error polling OSCAR: {e}")
     finally:
         client.close()
@@ -414,22 +414,9 @@ def cli_doctor() -> None:
         )
 
 
-from container_id.training.detector_rfdetr import train_detector
 
 
-@train_app.command("detector")
-def detector(config: str = typer.Option(..., help="Path to training config")):
-    """Train the detector model."""
-    with open(config, "r") as f:
-        import yaml
 
-        config_data = yaml.safe_load(f)
-    try:
-        train_detector(config_data)
-        typer.echo("Detector training finished.")
-    except Exception as e:  # noqa: BLE001
-        typer.echo(f"Detector training failed: {e}", err=True)
-        raise typer.Exit(1)
 
 
 from container_id.evaluation.detector import evaluate_detector
@@ -447,4 +434,22 @@ def cli_evaluate_detector(
         )
     except Exception as e:  # noqa: BLE001
         typer.echo(f"Detector evaluation failed: {e}", err=True)
+        raise typer.Exit(1)
+
+
+from container_id.evaluation.ocr import evaluate_ocr
+
+
+@evaluate_app.command("ocr")
+def cli_evaluate_ocr(
+    run_dir: str = typer.Option(..., help="Path to the training run directory."),
+):
+    """Evaluate the OCR model."""
+    try:
+        evaluate_ocr(run_dir)
+        typer.echo(
+            f"OCR evaluation finished. Results saved in {run_dir}/evaluation/ocr/"
+        )
+    except Exception as e:  # noqa: BLE001
+        typer.echo(f"OCR evaluation failed: {e}", err=True)
         raise typer.Exit(1)
