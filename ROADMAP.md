@@ -36,7 +36,7 @@ For detailed information on each task, please refer to the corresponding issue f
 - [x] Issue 20: Implement model-bundle manifest and verification.
 - [x] Issue 21: Implement ONNX detector runtime.
 - [x] Issue 22: Implement ONNX recognizer runtime.
-- [ ] Issue 23: Implement crop-quality and orientation transforms.
+- [x] Issue 23: Implement crop-quality and orientation transforms.
 - [ ] Issue 25: Implement still-image and directory inference CLI.
 
 ### Milestone 7: Advanced Tracking and Streams
