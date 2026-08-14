@@ -40,7 +40,7 @@ For detailed information on each task, please refer to the corresponding issue f
 - [x] Issue 25: Implement still-image and directory inference CLI.
 
 ### Milestone 7: Advanced Tracking and Streams
-- [ ] Issue 26: Implement IoU tracker.
+- [x] Issue 26: Implement IoU tracker.
 - [ ] Issue 27: Implement temporal consensus and duplicate suppression.
 - [ ] Issue 28: Implement video inference.
 - [ ] Issue 29: Implement RTSP decoder, bounded queue, and reconnect.
