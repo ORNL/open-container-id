@@ -1,4 +1,5 @@
 import numpy as np
+
 from container_id.runtime.crop_quality import calculate_crop_quality
 
 

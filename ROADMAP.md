@@ -37,7 +37,7 @@ For detailed information on each task, please refer to the corresponding issue f
 - [x] Issue 21: Implement ONNX detector runtime.
 - [x] Issue 22: Implement ONNX recognizer runtime.
 - [x] Issue 23: Implement crop-quality and orientation transforms.
-- [ ] Issue 25: Implement still-image and directory inference CLI.
+- [x] Issue 25: Implement still-image and directory inference CLI.
 
 ### Milestone 7: Advanced Tracking and Streams
 - [ ] Issue 26: Implement IoU tracker.

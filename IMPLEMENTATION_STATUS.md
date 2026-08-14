@@ -8,7 +8,7 @@
 - [x] OCR crop dataset and review
 - [x] Detector training and evaluation
 - [x] OCR training and evaluation
-- [ ] Still-image end-to-end runtime
+- [x] Still-image end-to-end runtime
 - [ ] Tracking, consensus, video, and RTSP
 - [ ] API, Docker, and offline release path
 - [ ] Real training and model release

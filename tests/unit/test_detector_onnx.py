@@ -1,5 +1,7 @@
 import json
+
 import numpy as np
+
 from container_id.runtime.detector_onnx import ONNXDetector
 
 
