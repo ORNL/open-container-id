@@ -41,7 +41,7 @@ For detailed information on each task, please refer to the corresponding issue f
 
 ### Milestone 7: Advanced Tracking and Streams
 - [x] Issue 26: Implement IoU tracker.
-- [ ] Issue 27: Implement temporal consensus and duplicate suppression.
+- [x] Issue 27: Implement temporal consensus and duplicate suppression.
 - [ ] Issue 28: Implement video inference.
 - [ ] Issue 29: Implement RTSP decoder, bounded queue, and reconnect.
 
