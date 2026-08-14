@@ -545,5 +545,23 @@ def cli_infer_directory(
         raise typer.Exit(1)
 
 
+from container_id.streams.video import process_video
+
+
+@infer_app.command("video")
+def cli_infer_video(
+    input: str = typer.Option(..., help="Path to input video mp4."),
+    models: str = typer.Option(..., help="Path to model bundle directory."),
+    output: str = typer.Option(..., help="Path to output events.jsonl file."),
+    fps: float = typer.Option(None, help="Target processing frame rate."),
+):
+    """Run inference, tracking, and consensus on a video file."""
+    try:
+        process_video(input, output, models, fps)
+    except Exception as e:  # noqa: BLE001
+        typer.echo(f"Video inference failed: {e}", err=True)
+        raise typer.Exit(1)
+
+
 if __name__ == "__main__":
     app()
