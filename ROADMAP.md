@@ -43,7 +43,7 @@ For detailed information on each task, please refer to the corresponding issue f
 - [x] Issue 26: Implement IoU tracker.
 - [x] Issue 27: Implement temporal consensus and duplicate suppression.
 - [x] Issue 28: Implement video inference.
-- [ ] Issue 29: Implement RTSP decoder, bounded queue, and reconnect.
+- [x] Issue 29: Implement RTSP decoder, bounded queue, and reconnect.
 
 ### External Integrations
 

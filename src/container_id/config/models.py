@@ -65,3 +65,23 @@ class OcrConfig(BaseModel):
     output_dir: str = "data/processed/ocr-v1"
     padding_fraction: float = 0.08
     include_invalid_confirmed: bool = False
+
+
+class ReconnectConfig(BaseModel):
+    initial_delay_seconds: int = 1
+    maximum_delay_seconds: int = 30
+    multiplier: int = 2
+    jitter_fraction: float = 0.20
+
+class CameraConfig(BaseModel):
+    id: str = "gate-1"
+    url_env: str = "CONTAINER_ID_RTSP_URL"
+    transport: str = "tcp"
+    selected_frame_rate: float = 5.0
+    connect_timeout_seconds: int = 10
+    read_timeout_seconds: int = 10
+    reconnect: ReconnectConfig = ReconnectConfig()
+
+class RTSPConfig(BaseModel):
+    schema_version: int = 1
+    camera: CameraConfig = CameraConfig()

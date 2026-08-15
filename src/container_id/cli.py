@@ -563,5 +563,25 @@ def cli_infer_video(
         raise typer.Exit(1)
 
 
+
+rtsp_app = typer.Typer()
+app.add_typer(rtsp_app, name="rtsp", help="RTSP commands.")
+
+from container_id.streams.rtsp import RTSPRunner
+
+
+@rtsp_app.command("run")
+def cli_rtsp_run(
+    models: str = typer.Option(..., help="Path to model bundle directory."),
+    config: str = typer.Option(..., help="Path to RTSP yaml config.")
+):
+    """Run the RTSP streaming inference pipeline."""
+    try:
+        runner = RTSPRunner(config_path=config, models_dir=models)
+        runner.run()
+    except Exception as e: # noqa: BLE001
+        typer.echo(f"RTSP pipeline failed: {e}", err=True)
+        raise typer.Exit(1)
+
 if __name__ == "__main__":
     app()
