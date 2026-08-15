@@ -9,6 +9,8 @@
 - [x] Detector training and evaluation
 - [x] OCR training and evaluation
 - [x] Still-image end-to-end runtime
-- [x] Tracking, consensus, video, and RTSP
+- [ ] Tracking, consensus, video, and RTSP
 - [ ] API, Docker, and offline release path
 - [ ] Real training and model release
+
+- [x] Issue 41: OSCAR OCR Integration API

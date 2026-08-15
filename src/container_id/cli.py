@@ -26,13 +26,20 @@ def version() -> None:
 
 
 @app.command()
-def oscar_poll() -> None:
-    """Poll OSCAR for alarming occupancies and submit container numbers."""
+@app.command(name="oscar-poll")
+def oscar_poll(
+    models: str = typer.Option(..., help="Path to the trained model bundle directory.")
+) -> None:
+    """Poll OSCAR for alarming occupancies, run inference on videos, and submit container numbers."""
+    import tempfile
+    import warnings
 
     import typer
+    warnings.filterwarnings("ignore")
 
     from container_id.config.models import OscarConfig
     from container_id.oscar.client import OscarClient
+    from container_id.streams.video import process_video
 
     config = OscarConfig()
     client = OscarClient(config)
@@ -43,18 +50,54 @@ def oscar_poll() -> None:
         for occ in occupancies:
             typer.echo(f"Found alarming occupancy: {occ['occupancyObsId']}")
 
-            # Mock OCR logic here since model pipeline is not yet fully complete
-            # We assume it reads MSKU1234567 for testing integration.
-            mock_container_number = "MSKU1234567"
+            # Download video and run inference
+            video_paths = occ.get("videoPaths", [])
+            if not video_paths:
+                typer.echo("No video paths found for this occupancy. Skipping.")
+                continue
 
-            typer.echo(
-                f"Submitting container number {mock_container_number} to {occ['controlStreamId']}"
-            )
-            client.submit_container_number(
-                control_stream_id=occ["controlStreamId"],
-                occupancy_obs_id=occ["occupancyObsId"],
-                container_number=mock_container_number,
-            )
+            best_container_number = None
+
+            for vp in video_paths:
+                typer.echo(f"Downloading video {vp}...")
+                video_bytes = client.download_video(vp)
+
+                with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as tmp:
+                    tmp.write(video_bytes)
+                    tmp_path = tmp.name
+
+                import json
+                typer.echo(f"Processing video {tmp_path}...")
+                events_file = tmp_path + ".jsonl"
+                process_video(input_path=tmp_path, output_path=events_file, bundle_dir=models)
+
+                # Read the events file to get the first valid container number
+                import os
+                if os.path.exists(events_file):
+                    with open(events_file, "r") as ev_f:
+                        for line in ev_f:
+                            try:
+                                ev = json.loads(line)
+                                if ev.get("container_number"):
+                                    best_container_number = ev["container_number"]
+                                    break
+                            except Exception: # noqa: BLE001, S110
+                                pass
+                    os.remove(events_file)
+                os.remove(tmp_path)
+
+                if best_container_number:
+                    break
+
+            if best_container_number:
+                typer.echo(f"Submitting container number {best_container_number} to {occ['controlStreamId']}")
+                client.submit_container_number(
+                    control_stream_id=occ["controlStreamId"],
+                    occupancy_obs_id=occ["occupancyObsId"],
+                    container_number=best_container_number,
+                )
+            else:
+                typer.echo("No container number found in videos.")
 
     except Exception as e:  # noqa: BLE001
         typer.echo(f"Error polling OSCAR: {e}")

@@ -47,7 +47,7 @@ For detailed information on each task, please refer to the corresponding issue f
 
 ### External Integrations
 
-- [ ] Issue 41: OSCAR OCR Integration API
+- [x] Issue 41: OSCAR OCR Integration API
 
 ### Milestone 8: Deployment and Polish
 - [ ] Issue 30: Implement local FastAPI service.

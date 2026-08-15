@@ -1,7 +1,6 @@
-from datetime import UTC, datetime, timedelta
-
-from container_id.runtime.consensus import ConsensusEngine
+from datetime import datetime, timezone, timedelta
 from container_id.runtime.tracking import Track
+from container_id.runtime.consensus import ConsensusEngine
 
 
 def test_consensus_engine_emit():
@@ -11,7 +10,7 @@ def test_consensus_engine_emit():
         duplicate_suppression_seconds=30.0,
     )
 
-    t0 = datetime.now(UTC)
+    t0 = datetime.now(timezone.utc)
     track = Track((0, 0, 10, 10), t0)
 
     # 1. Provide insufficient frames
@@ -71,7 +70,7 @@ def test_duplicate_suppression():
         camera_id="cam1",
     )
 
-    t0 = datetime.now(UTC)
+    t0 = datetime.now(timezone.utc)
     track1 = Track((0, 0, 10, 10), t0)
     track1.detector_confidences = [0.9]
     track1.crop_quality_scores = [0.9]
