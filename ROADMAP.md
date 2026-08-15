@@ -51,7 +51,7 @@ For detailed information on each task, please refer to the corresponding issue f
 
 ### Milestone 8: Deployment and Polish
 - [x] Issue 30: Implement local FastAPI service.
-- [ ] Issue 31: Implement non-root runtime Docker image.
+- [x] Issue 31: Implement non-root runtime Docker image.
 - [ ] Issue 32: Implement offline no-network smoke test.
 - [ ] Issue 33: Complete licensing, attribution, model card, and citation files.
 - [ ] Issue 40: Prepare v0.1.0 release.

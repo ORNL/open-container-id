@@ -13,4 +13,4 @@
 - [ ] API, Docker, and offline release path
 - [ ] Real training and model release
 
-- [x] Issue 30: Implement local FastAPI service.
+- [x] Issue 31: Implement non-root runtime Docker image.
