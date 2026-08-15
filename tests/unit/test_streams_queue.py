@@ -1,5 +1,5 @@
-import pytest
 from container_id.streams.queue import LatestFrameQueue
+
 
 def test_latest_frame_queue_puts_and_gets():
     q = LatestFrameQueue(maxsize=3)

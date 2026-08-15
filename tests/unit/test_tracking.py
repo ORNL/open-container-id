@@ -1,4 +1,5 @@
-from datetime import datetime, timezone, timedelta
+from datetime import UTC, datetime, timedelta
+
 from container_id.runtime.tracking import IoUTracker, compute_iou
 
 
@@ -19,7 +20,7 @@ def test_compute_iou():
 
 def test_iou_tracker_match_and_age():
     tracker = IoUTracker(iou_threshold=0.3, max_missed_frames=2)
-    t0 = datetime.now(timezone.utc)
+    t0 = datetime.now(UTC)
 
     # Frame 1: One detection
     dets1 = [{"bbox_xyxy": (0.0, 0.0, 10.0, 10.0), "detector_confidence": 0.9}]
@@ -44,7 +45,7 @@ def test_iou_tracker_match_and_age():
     assert len(tracks3) == 2
 
     # Find original track
-    orig = [t for t in tracks3 if t.track_id == track_id][0]
+    orig = next(t for t in tracks3 if t.track_id == track_id)
     assert orig.missed_frames == 1
 
     # Frame 4: Empty detection (ages both, keeps them alive because max_missed_frames=2)

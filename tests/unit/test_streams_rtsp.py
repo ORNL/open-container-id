@@ -1,8 +1,9 @@
-import pytest
-from unittest.mock import patch, MagicMock
 import os
 import pathlib
+from unittest.mock import MagicMock, patch
+
 from container_id.streams.rtsp import RTSPRunner
+
 
 @patch("yaml.safe_load")
 def test_rtsp_runner_init(mock_yaml_safe_load: MagicMock, tmp_path: pathlib.Path) -> None:

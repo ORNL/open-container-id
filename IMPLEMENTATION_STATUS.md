@@ -9,8 +9,8 @@
 - [x] Detector training and evaluation
 - [x] OCR training and evaluation
 - [x] Still-image end-to-end runtime
-- [ ] Tracking, consensus, video, and RTSP
+- [x] Tracking, consensus, video, and RTSP
 - [ ] API, Docker, and offline release path
 - [ ] Real training and model release
 
-- [x] Issue 41: OSCAR OCR Integration API
+- [x] Issue 30: Implement local FastAPI service.
