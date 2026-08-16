@@ -16,3 +16,5 @@
 - [x] Issue 31: Implement non-root runtime Docker image.
 
 - [x] Issue 32: Implement offline no-network smoke test.
+
+- [x] Issue 33: Complete licensing, attribution, model card, and citation files.
