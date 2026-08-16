@@ -50,11 +50,11 @@ For detailed information on each task, please refer to the corresponding issue f
 - [x] Issue 41: OSCAR OCR Integration API
 
 ### Milestone 8: Deployment and Polish
-- [x] Issue 30: Implement local FastAPI service.
-- [x] Issue 31: Implement non-root runtime Docker image.
-- [x] Issue 32: Implement offline no-network smoke test.
-- [x] Issue 33: Complete licensing, attribution, model card, and citation files.
-- [x] Issue 40: Prepare v0.1.0 release.
+- [ ] Issue 30: Implement local FastAPI service.
+- [ ] Issue 31: Implement non-root runtime Docker image.
+- [ ] Issue 32: Implement offline no-network smoke test.
+- [ ] Issue 33: Complete licensing, attribution, model card, and citation files.
+- [ ] Issue 40: Prepare v0.1.0 release.
 
 ### Deferred / Experimental
 - [ ] Issue 24: Implement vertical-unstack experiment.

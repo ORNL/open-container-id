@@ -1,6 +1,6 @@
 import threading
 from collections import deque
-from typing import Any
+from typing import Any, Optional
 
 
 class LatestFrameQueue:
@@ -24,10 +24,10 @@ class LatestFrameQueue:
                 self._queue.append(item)
             self._condition.notify()
 
-    def get(self, timeout: float | None = None) -> Any | None:
+    def get(self, timeout: float | None = None) -> Optional[Any]:
         """Remove and return an item from the queue."""
         with self._condition:
-            while not self._queue:
+            if not self._queue:
                 if not self._condition.wait(timeout=timeout):
                     return None
             return self._queue.popleft()

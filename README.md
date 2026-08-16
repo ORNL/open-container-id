@@ -1,95 +1,89 @@
 # Open Container ID
 
-An open-source Python system for detecting and recognizing shipping-container ID numbers (ISO 6346) in logistics environments.
+An open-source system to detect and recognize intermodal shipping-container identification numbers using local, hardware-accelerated deep learning.
 
-## Overview
+## Status
+This project is currently under active development. See `IMPLEMENTATION_STATUS.md` and `ROADMAP.md` for details.
 
-This project implements a two-stage detection and Optical Character Recognition (OCR) pipeline:
-1. **Detector**: Evaluates video frames or static images, extracting bounding boxes containing container IDs. Models are trained on RF-DETR architectures.
-2. **Recognizer**: Reads the text characters inside the container ID crops. Models are based on the docTR project.
+## Instructions & Workflows
 
-By decoupling these steps, the system provides high robustness on varying container types and camera angles, especially with the use of a Temporal Consensus Engine to suppress duplicate reads from RTSP streams.
+### 1. Repository Developer Setup
 
-## Features
-
-- **Offline-first**: Run the core runtime without internet access (smoke tested via `--network none`).
-- **Real-time Tracking**: RTSP stream decoding via PyAV, IoU multi-frame tracking, temporal consensus, and bounding box scoring.
-- **REST Service**: Local optional FastAPI server for single-image or bulk OCR jobs.
-- **ISO 6346 Verification**: All reads are stringently validated via standard ISO Check Digit rules.
-
-## Quick Starts
-
-### Inference from an existing Model Bundle
-
-Make sure you have a `models/` directory correctly populated with an Open Container ID bundle.
+To develop or run tests locally:
 
 ```bash
-# Setup
-git clone https://github.com/tyronechrisharris/open-container-id.git
+git clone <repository>
 cd open-container-id
-uv sync --extra runtime --extra api --extra rtsp
-
-# Run a static image inference
-uv run container-id infer image --input sample.jpg --models models/ --output result.json
-
-# Serve the FastAPI REST endpoints locally
-uv run container-id serve --models models/ --host 127.0.0.1 --port 8000
+# Install with dev dependencies
+uv sync --extra dev
+uv run pre-commit install
+# Run the test suite
+uv run pytest
 ```
 
-### Data Preparation
+### 2. Dataset Owner Workflow
 
-Data preparation assumes you have the PranW dataset available.
-```bash
-# Extract your datasets safely
-uv run container-id data extract --archives sources.yaml --dest data/raw/
-
-# Build the canonical dataset
-uv run container-id data build-canonical --config config.yaml
-```
-
-### M4 Max / MPS Training
-
-This project is built explicitly to support fast, localized training on Apple Silicon (MPS).
-Documentation for tuning batch sizes and MPS troubleshooting can be found in `docs/training-macos-mps.md`.
+To register and prepare data for training:
 
 ```bash
-# Verify MPS is active
-uv run container-id train doctor
+mkdir -p data/raw/downloads
+# Place the downloaded datasets here
+cp /path/to/pranw-v7-coco.zip data/raw/downloads/
+cp /path/to/dasad-v1-coco.zip data/raw/downloads/
 
-# Run detector training
-uv run container-id train detector --config rfdetr_config.yaml
-
-# Evaluate your models
-uv run container-id evaluate detector --model runs/detector/weights.pt --data dataset.yaml
+uv run container-id data register --config configs/data/sources.local.yaml
+uv run container-id data extract --config configs/data/sources.local.yaml
+uv run container-id data audit --config configs/data/sources.local.yaml
+uv run container-id data build-canonical --config configs/data/canonical.yaml
+uv run container-id data build-ocr --config configs/data/ocr.yaml
 ```
 
-### RTSP and Offline Usage
+### 3. Detector Trainer
 
-- **RTSP**: Start a continuous processing loop over an RTSP source:
-  `export CONTAINER_ID_RTSP_URL="rtsp://user:pass@10.0.0.1/stream"`
-  `uv run container-id rtsp run --models models/ --config rtsp.yaml`
-- **Offline Docker**: The default `deployment/Dockerfile.runtime` sets up a CPU-only Python Slim bookworm container running as the `containerid` non-root user. Read `docs/offline-deployment.md` for specific security configurations.
+```bash
+# Note: This has now been implemented.
+uv sync --extra train
+uv run container-id train detector --config configs/train/detector-rfdetr-small.yaml
+uv run container-id evaluate detector --run-dir runs/detector/<run-id>
+uv run container-id export detector --run-dir runs/detector/<run-id>
+```
 
-## Documentation
+### 4. OCR Trainer
 
-Full architectural and process guides are located in the `docs/` folder:
-- [Architecture](docs/architecture.md)
-- [Data Preparation](docs/data-preparation.md)
-- [Dataset Audit](docs/dataset-audit.md)
-- [Training on macOS (MPS)](docs/training-macos-mps.md)
-- [Detector Training](docs/detector-training.md)
-- [OCR Training](docs/ocr-training.md)
-- [Evaluation](docs/evaluation.md)
-- [Model Bundles](docs/model-bundle.md)
-- [Offline Deployment](docs/offline-deployment.md)
-- [RTSP Deployment](docs/rtsp-deployment.md)
-- [API](docs/api.md)
-- [Security & Privacy](docs/security-and-privacy.md)
-- [Troubleshooting](docs/troubleshooting.md)
-- [Release Process](docs/release-process.md)
+```bash
+# Note: The OCR trainer has now been implemented.
+uv run container-id train ocr --config configs/train/ocr-crnn-mobilenet-v3-small.yaml
+uv run container-id evaluate ocr --run-dir runs/ocr/<run-id>
+uv run container-id export ocr --run-dir runs/ocr/<run-id>
+```
 
-## Licensing
+### 5. Offline End User
 
-- **Code**: Apache License 2.0
-- **Model Checkpoints (Exported)**: Apache License 2.0
-- **Training Data**: CC BY 4.0. See `licenses/DATASET_ATTRIBUTION.md`.
+```bash
+uv sync --extra runtime
+uv run container-id infer image \
+  --models /opt/container-id/models \
+  --input sample.jpg \
+  --output result.json
+```
+
+### 6. RTSP Operator
+
+```bash
+export CONTAINER_ID_RTSP_URL='rtsp://user:password@camera.example/stream'
+uv run container-id rtsp run \
+  --models /opt/container-id/models \
+  --config configs/runtime/rtsp.example.yaml
+```
+
+## Contributing
+See `CONTRIBUTING.md` (to be added) and check the `docs/issues` folder for current tasks that need to be implemented.
+
+### 7. OSCAR Integration
+
+To poll OSCAR for alarming occupancies and submit read container numbers back:
+
+```bash
+# Configure the connection (e.g. by setting env vars for the config)
+uv run container-id oscar-poll
+```

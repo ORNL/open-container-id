@@ -1,8 +1,6 @@
 import json
-
-import cv2
 import numpy as np
-
+import cv2
 from container_id.streams.video import process_video
 
 

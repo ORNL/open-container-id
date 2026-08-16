@@ -12,8 +12,7 @@ logger = logging.getLogger(__name__)
 # Global pipeline instance initialized on startup
 _pipeline: RuntimePipeline | None = None
 
-from collections.abc import AsyncGenerator
-
+from typing import AsyncGenerator
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
@@ -43,10 +42,8 @@ app = FastAPI(
 )
 
 
-from typing import Any
-
-
 @app.get("/health")
+from typing import Any
 async def health_check() -> dict[str, Any]:
     """Simple health check endpoint."""
     return {"status": "ok", "model_loaded": _pipeline is not None}

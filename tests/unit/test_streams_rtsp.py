@@ -1,14 +1,11 @@
-import os
-import pathlib
+import pytest
 from unittest.mock import MagicMock, patch
-
 from container_id.streams.rtsp import RTSPRunner
 
-
-@patch("yaml.safe_load")
-def test_rtsp_runner_init(mock_yaml_safe_load: MagicMock, tmp_path: pathlib.Path) -> None:
-    mock_yaml_safe_load.return_value = {
-        "camera": {"selected_frame_rate": 5.0},
+@patch("container_id.streams.rtsp.yaml")
+def test_rtsp_runner_init(mock_yaml, tmp_path):
+    mock_yaml.safe_load.return_value = {
+        "camera": {"url": "rtsp://test", "fps": 15},
         "reconnect": {"max_retries": 3, "backoff_factor": 1.0},
     }
 
@@ -16,9 +13,9 @@ def test_rtsp_runner_init(mock_yaml_safe_load: MagicMock, tmp_path: pathlib.Path
     config_file.touch()
     models_dir = tmp_path / "models"
 
-    with patch.dict(os.environ, {"CONTAINER_ID_RTSP_URL": "rtsp://test"}), patch("container_id.streams.rtsp.RuntimePipeline"):
+    with patch("container_id.streams.rtsp.RuntimePipeline") as mock_pipeline:
         runner = RTSPRunner(str(config_file), str(models_dir))
-        assert runner.uri == "rtsp://test"
-        assert runner.config.camera.selected_frame_rate == 5.0
-        # No longer testing max_retries as reconnect config has different fields
-        # mock_pipeline.assert_called_once()  # Pipeline is only called in consumer thread, not in init
+        assert runner.config.camera.url == "rtsp://test"
+        assert runner.config.camera.fps == 15
+        assert runner.config.reconnect.max_retries == 3
+        mock_pipeline.assert_called_once()

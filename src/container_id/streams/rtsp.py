@@ -4,8 +4,9 @@ import random
 import re
 import threading
 import time
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import Any
 
 from container_id.config.models import RTSPConfig
 from container_id.runtime.consensus import ConsensusEngine
@@ -73,6 +74,7 @@ class RTSPRunner:
                 logger.info("Connected.")
 
                 # Decoding loop
+                frame_interval_pts = 0
                 if stream.average_rate and stream.average_rate > 0 and self.fps > 0:
                     stream_fps = float(stream.average_rate)
                     if self.fps < stream_fps:
@@ -87,8 +89,9 @@ class RTSPRunner:
                         break
 
                     now = time.monotonic()
-                    if target_interval > 0 and (now - last_processed_time) < target_interval:
-                        continue
+                    if target_interval > 0:
+                        if (now - last_processed_time) < target_interval:
+                            continue
 
                     last_processed_time = now
 
@@ -111,7 +114,7 @@ class RTSPRunner:
                 if container:
                     try:
                         container.close()
-                    except Exception: # noqa: BLE001, S110
+                    except Exception: # noqa: BLE001
                         pass
 
     def _consumer_thread(self):
