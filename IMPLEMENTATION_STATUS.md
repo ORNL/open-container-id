@@ -18,3 +18,5 @@
 - [x] Issue 32: Implement offline no-network smoke test.
 
 - [x] Issue 33: Complete licensing, attribution, model card, and citation files.
+
+- [x] Issue 40: Prepare v0.1.0 release.
