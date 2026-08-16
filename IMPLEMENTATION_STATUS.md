@@ -14,3 +14,5 @@
 - [ ] Real training and model release
 
 - [x] Issue 31: Implement non-root runtime Docker image.
+
+- [x] Issue 32: Implement offline no-network smoke test.
