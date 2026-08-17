@@ -2,18 +2,28 @@ import typer
 
 app = typer.Typer(help="Open Container ID CLI")
 
+evaluate_app = typer.Typer()
+app.add_typer(evaluate_app, name="evaluate", help="Evaluation commands.")
+
+from container_id.export import app as export_app
+
+app.add_typer(export_app, name="export", help="Export commands.")
+
+from container_id.training import app as train_app
+
+app.add_typer(train_app, name="train", help="Training commands.")
+
+
 @app.callback()
 def callback() -> None:
     pass
+
 
 @app.command()
 def version() -> None:
     """Print the version."""
     typer.echo("0.1.0")
 
-
-if __name__ == "__main__":
-    app()
 
 @app.command()
 def oscar_poll() -> None:
@@ -37,17 +47,20 @@ def oscar_poll() -> None:
             # We assume it reads MSKU1234567 for testing integration.
             mock_container_number = "MSKU1234567"
 
-            typer.echo(f"Submitting container number {mock_container_number} to {occ['controlStreamId']}")
+            typer.echo(
+                f"Submitting container number {mock_container_number} to {occ['controlStreamId']}"
+            )
             client.submit_container_number(
                 control_stream_id=occ["controlStreamId"],
                 occupancy_obs_id=occ["occupancyObsId"],
-                container_number=mock_container_number
+                container_number=mock_container_number,
             )
 
     except Exception as e:  # noqa: BLE001
         typer.echo(f"Error polling OSCAR: {e}")
     finally:
         client.close()
+
 
 from pathlib import Path
 
@@ -60,8 +73,11 @@ from container_id.data.registry import register_sources
 data_app = typer.Typer(help="Data management commands.")
 app.add_typer(data_app, name="data")
 
+
 @data_app.command(name="register")
-def register_data(config: str = typer.Option(..., help="Path to sources YAML config.")) -> None:
+def register_data(
+    config: str = typer.Option(..., help="Path to sources YAML config."),
+) -> None:
     """Register dataset archives."""
     config_path = Path(config)
     with open(config_path, "r") as f:
@@ -72,14 +88,19 @@ def register_data(config: str = typer.Option(..., help="Path to sources YAML con
     registry_path = Path("data/manifests/source_registry.local.json")
     try:
         registry = register_sources(sources_config, registry_path)
-        typer.echo(f"Successfully registered {len(registry.archives)} archives to {registry_path}")
-    except Exception as e: # noqa: BLE001
+        typer.echo(
+            f"Successfully registered {len(registry.archives)} archives to {registry_path}"
+        )
+    except Exception as e:  # noqa: BLE001
         typer.echo(f"Registration failed: {e}", err=True)
+
 
 @data_app.command(name="extract")
 def extract_data(
     config: str = typer.Option(..., help="Path to sources YAML config."),
-    force: bool = typer.Option(False, help="Force overwrite of existing extracted directories.")
+    force: bool = typer.Option(
+        False, help="Force overwrite of existing extracted directories."
+    ),
 ) -> None:
     """Extract registered dataset archives."""
     config_path = Path(config)
@@ -94,20 +115,27 @@ def extract_data(
         try:
             manifest = safe_extract_zip(archive.path, target_dir, force=force)
 
-            manifest_path = Path("data/manifests") / f"{archive.name}_extraction_manifest.json"
+            manifest_path = (
+                Path("data/manifests") / f"{archive.name}_extraction_manifest.json"
+            )
             manifest_path.parent.mkdir(parents=True, exist_ok=True)
             with open(manifest_path, "w") as mf:
                 mf.write(manifest.model_dump_json(indent=2))
 
-            typer.echo(f"Extracted {len(manifest.members)} files. Manifest written to {manifest_path}")
-        except Exception as e: # noqa: BLE001
+            typer.echo(
+                f"Extracted {len(manifest.members)} files. Manifest written to {manifest_path}"
+            )
+        except Exception as e:  # noqa: BLE001
             typer.echo(f"Extraction failed for {archive.name}: {e}", err=True)
+
 
 from container_id.data.coco import discover_coco_splits, validate_coco_split
 
 
 @data_app.command(name="validate-coco")
-def validate_coco(source: str = typer.Option(..., help="Path to the extracted COCO dataset source.")) -> None:
+def validate_coco(
+    source: str = typer.Option(..., help="Path to the extracted COCO dataset source."),
+) -> None:
     """Validate a COCO dataset structure."""
     source_path = Path(source)
     if not source_path.exists():
@@ -129,7 +157,9 @@ def validate_coco(source: str = typer.Option(..., help="Path to the extracted CO
         typer.echo(f"  Categories: {report.categories_count}")
 
         if report.images_without_annotations > 0:
-            typer.echo(f"  Note: {report.images_without_annotations} images have no annotations.")
+            typer.echo(
+                f"  Note: {report.images_without_annotations} images have no annotations."
+            )
 
         for warning in report.warnings:
             typer.echo(f"  WARNING: {warning}", err=True)
@@ -145,6 +175,7 @@ def validate_coco(source: str = typer.Option(..., help="Path to the extracted CO
     if not all_valid:
         raise typer.Exit(1)
 
+
 import datetime
 
 from container_id.data.audit import run_dataset_audit
@@ -152,11 +183,14 @@ from container_id.data.contact_sheets import generate_contact_sheets
 
 
 @data_app.command(name="audit")
-def audit_data(config: str = typer.Option(..., help="Path to sources YAML config.")) -> None:
+def audit_data(
+    config: str = typer.Option(..., help="Path to sources YAML config."),
+) -> None:
     """Audit registered dataset archives and generate contact sheets."""
     config_path = Path(config)
     with open(config_path, "r") as f:
         import yaml
+
         yaml_data = yaml.safe_load(f)
 
     sources_config = DataSourcesConfig(**yaml_data)
@@ -169,9 +203,10 @@ def audit_data(config: str = typer.Option(..., help="Path to sources YAML config
         run_dataset_audit(sources_config, output_dir)
         generate_contact_sheets(output_dir)
         typer.echo("Audit completed successfully.")
-    except Exception as e: # noqa: BLE001
+    except Exception as e:  # noqa: BLE001
         typer.echo(f"Audit failed: {e}", err=True)
         raise typer.Exit(1)
+
 
 from container_id.data.audit import acknowledge_audit
 
@@ -179,16 +214,22 @@ from container_id.data.audit import acknowledge_audit
 @data_app.command(name="acknowledge-audit")
 def cli_acknowledge_audit(
     audit_dir: str = typer.Option(..., help="Path to the audit directory."),
-    confirm_class: list[str] = typer.Option(..., help="Class semantic confirmation in the format dataset_id:source_class=target_class")
+    confirm_class: list[str] = typer.Option(
+        ...,
+        help="Class semantic confirmation in the format dataset_id:source_class=target_class",
+    ),
 ) -> None:
     """Acknowledge an audit by confirming class semantics."""
     audit_path = Path(audit_dir)
     try:
         acknowledge_audit(audit_path, confirm_class)
-        typer.echo(f"Audit acknowledged successfully. Wrote to {audit_path / 'acknowledgment.json'}")
-    except Exception as e: # noqa: BLE001
+        typer.echo(
+            f"Audit acknowledged successfully. Wrote to {audit_path / 'acknowledgment.json'}"
+        )
+    except Exception as e:  # noqa: BLE001
         typer.echo(f"Failed to acknowledge audit: {e}", err=True)
         raise typer.Exit(1)
+
 
 from container_id.data.dedupe import deduplicate_dataset
 
@@ -196,7 +237,9 @@ from container_id.data.dedupe import deduplicate_dataset
 @data_app.command(name="find-duplicates")
 def cli_find_duplicates(
     dataset_id: str = typer.Option(..., help="ID of the dataset."),
-    extracted_dir: str = typer.Option(..., help="Path to the extracted dataset directory.")
+    extracted_dir: str = typer.Option(
+        ..., help="Path to the extracted dataset directory."
+    ),
 ) -> None:
     """Finds exact and near duplicates in an extracted dataset."""
     target_dir = Path(extracted_dir)
@@ -217,10 +260,13 @@ def cli_find_duplicates(
         output_path = target_dir / "duplicate_manifest.json"
         with open(output_path, "w") as f:
             f.write(manifest.model_dump_json(indent=2))
-        typer.echo(f"Found {len(manifest.groups)} duplicate groups. Wrote to {output_path}")
-    except Exception as e: # noqa: BLE001
+        typer.echo(
+            f"Found {len(manifest.groups)} duplicate groups. Wrote to {output_path}"
+        )
+    except Exception as e:  # noqa: BLE001
         typer.echo(f"Failed to run deduplication: {e}", err=True)
         raise typer.Exit(1)
+
 
 from container_id.config.models import CanonicalConfig
 from container_id.data.canonical import build_canonical_dataset
@@ -228,27 +274,31 @@ from container_id.data.canonical import build_canonical_dataset
 
 @data_app.command(name="build-canonical")
 def cli_build_canonical(
-    config: str = typer.Option(..., help="Path to canonical YAML config.")
+    config: str = typer.Option(..., help="Path to canonical YAML config."),
 ) -> None:
     """Build the canonical one-class COCO detection dataset."""
     config_path = Path(config)
 
     # Normally we load YAML but we'll mock it if file doesn't exist
     if not config_path.exists():
-        typer.echo(f"Warning: config not found at {config_path}, using defaults.", err=True)
+        typer.echo(
+            f"Warning: config not found at {config_path}, using defaults.", err=True
+        )
         canonical_config = CanonicalConfig()
     else:
         with open(config_path, "r") as f:
             import yaml
+
             yaml_data = yaml.safe_load(f)
         canonical_config = CanonicalConfig(**yaml_data)
 
     try:
         summary = build_canonical_dataset(canonical_config)
         typer.echo(f"Successfully built canonical dataset: {summary['message']}")
-    except Exception as e: # noqa: BLE001
+    except Exception as e:  # noqa: BLE001
         typer.echo(f"Failed to build canonical dataset: {e}", err=True)
         raise typer.Exit(1)
+
 
 from container_id.config.models import OcrConfig
 from container_id.data.ocr_crops import build_ocr_dataset
@@ -256,26 +306,30 @@ from container_id.data.ocr_crops import build_ocr_dataset
 
 @data_app.command(name="build-ocr")
 def cli_build_ocr(
-    config: str = typer.Option(..., help="Path to OCR YAML config.")
+    config: str = typer.Option(..., help="Path to OCR YAML config."),
 ) -> None:
     """Build the OCR crop dataset and docTR labels."""
     config_path = Path(config)
 
     if not config_path.exists():
-        typer.echo(f"Warning: config not found at {config_path}, using defaults.", err=True)
+        typer.echo(
+            f"Warning: config not found at {config_path}, using defaults.", err=True
+        )
         ocr_config = OcrConfig()
     else:
         with open(config_path, "r") as f:
             import yaml
+
             yaml_data = yaml.safe_load(f)
         ocr_config = OcrConfig(**yaml_data)
 
     try:
         summary = build_ocr_dataset(ocr_config)
         typer.echo(f"Successfully built OCR dataset: {summary['message']}")
-    except Exception as e: # noqa: BLE001
+    except Exception as e:  # noqa: BLE001
         typer.echo(f"Failed to build OCR dataset: {e}", err=True)
         raise typer.Exit(1)
+
 
 import uuid
 
@@ -288,7 +342,9 @@ def cli_review(
     audit_dir: str = typer.Option(..., help="Path to the audit directory."),
     export_csv: str = typer.Option(None, help="Export current reviews to CSV."),
     import_csv: str = typer.Option(None, help="Import review decisions from CSV."),
-    generate_stub: bool = typer.Option(False, help="Generate a stub review record for testing.")
+    generate_stub: bool = typer.Option(
+        False, help="Generate a stub review record for testing."
+    ),
 ) -> None:
     """Manage the manual review store and UI/CSV flow."""
     audit_path = Path(audit_dir)
@@ -302,7 +358,7 @@ def cli_review(
             sample_id="stub_sample",
             queue="filename_no_candidate",
             current_status="pending",
-            proposed_label=None
+            proposed_label=None,
         )
         store.add_or_update(stub)
         store.save()
@@ -319,7 +375,10 @@ def cli_review(
         typer.echo(f"Imported and updated {count} review decisions from {import_path}")
 
     pending = len(store.get_pending())
-    typer.echo(f"Review store contains {len(store.records)} total records ({pending} pending).")
+    typer.echo(
+        f"Review store contains {len(store.records)} total records ({pending} pending)."
+    )
+
 
 @app.command(name="doctor")
 def cli_doctor() -> None:
@@ -342,5 +401,214 @@ def cli_doctor() -> None:
         else:
             typer.echo(f"{k}: {v}")
 
-    if not report["device_info"].get("mps_available", False) and not report["device_info"].get("cuda_available", False):
-        typer.echo("\nWARNING: No hardware acceleration (MPS or CUDA) found. Training will use CPU and be very slow.", err=True)
+    if not report["device_info"].get("mps_available", False) and not report[
+        "device_info"
+    ].get("cuda_available", False):
+        typer.echo(
+            "\nWARNING: No hardware acceleration (MPS or CUDA) found. Training will use CPU and be very slow.",
+            err=True,
+        )
+
+
+from container_id.evaluation.detector import evaluate_detector
+
+
+@evaluate_app.command("detector")
+def cli_evaluate_detector(
+    run_dir: str = typer.Option(..., help="Path to the training run directory."),
+):
+    """Evaluate the detector model."""
+    try:
+        evaluate_detector(run_dir)
+        typer.echo(
+            f"Detector evaluation finished. Results saved in {run_dir}/evaluation/detector/"
+        )
+    except Exception as e:  # noqa: BLE001
+        typer.echo(f"Detector evaluation failed: {e}", err=True)
+        raise typer.Exit(1)
+
+
+from container_id.evaluation.ocr import evaluate_ocr
+
+
+@evaluate_app.command("ocr")
+def cli_evaluate_ocr(
+    run_dir: str = typer.Option(..., help="Path to the training run directory."),
+):
+    """Evaluate the OCR model."""
+    try:
+        evaluate_ocr(run_dir)
+        typer.echo(
+            f"OCR evaluation finished. Results saved in {run_dir}/evaluation/ocr/"
+        )
+    except Exception as e:  # noqa: BLE001
+        typer.echo(f"OCR evaluation failed: {e}", err=True)
+        raise typer.Exit(1)
+
+
+bundle_app = typer.Typer()
+app.add_typer(bundle_app, name="bundle", help="Model bundle commands.")
+
+from container_id.export.bundle import build_bundle, verify_bundle
+
+
+@bundle_app.command("build")
+def cli_bundle_build(
+    detector: str = typer.Option(..., help="Path to exported detector.onnx"),
+    recognizer: str = typer.Option(..., help="Path to exported recognizer.onnx"),
+    config: str = typer.Option(..., help="Path to runtime default config"),
+    output: str = typer.Option(..., help="Path to output bundle directory"),
+):
+    """Build a deployable model bundle."""
+    try:
+        build_bundle(detector, recognizer, config, output)
+    except Exception as e:  # noqa: BLE001
+        typer.echo(f"Bundle build failed: {e}", err=True)
+        raise typer.Exit(1)
+
+
+@bundle_app.command("verify")
+def cli_bundle_verify(
+    bundle_dir: str = typer.Argument(..., help="Path to bundle directory"),
+):
+    """Verify a deployable model bundle."""
+    try:
+        verify_bundle(bundle_dir)
+    except Exception as e:  # noqa: BLE001
+        typer.echo(f"Bundle verification failed: {e}", err=True)
+        raise typer.Exit(1)
+
+
+@bundle_app.command("inspect")
+def cli_bundle_inspect(
+    bundle_dir: str = typer.Argument(..., help="Path to bundle directory"),
+):
+    """Inspect a deployable model bundle."""
+    # Dummy inspect command for now to satisfy CLI structure reqs
+    typer.echo(f"Inspecting bundle at {bundle_dir}...")
+    try:
+        verify_bundle(bundle_dir)
+        import json
+        from pathlib import Path
+
+        with open(Path(bundle_dir) / "manifest.json") as f:
+            manifest = json.load(f)
+            typer.echo(json.dumps(manifest, indent=2))
+    except Exception as e:  # noqa: BLE001
+        typer.echo(f"Bundle inspection failed: {e}", err=True)
+        raise typer.Exit(1)
+
+
+infer_app = typer.Typer()
+app.add_typer(infer_app, name="infer", help="Inference commands.")
+
+from container_id.runtime.pipeline import RuntimePipeline
+
+
+@infer_app.command("image")
+def cli_infer_image(
+    input: str = typer.Option(..., help="Path to input image."),
+    models: str = typer.Option(..., help="Path to model bundle directory."),
+    output: str = typer.Option(None, help="Path to output JSON result."),
+):
+    """Run inference on a single image."""
+    try:
+        pipeline = RuntimePipeline(models)
+        result = pipeline.infer_image(input, output)
+        if not output:
+            import json
+
+            typer.echo(json.dumps(result, indent=2))
+        else:
+            typer.echo(f"Results written to {output}")
+    except Exception as e:  # noqa: BLE001
+        typer.echo(f"Inference failed: {e}", err=True)
+        raise typer.Exit(1)
+
+
+@infer_app.command("directory")
+def cli_infer_directory(
+    input_dir: str = typer.Option(
+        ..., help="Path to input directory containing images."
+    ),
+    models: str = typer.Option(..., help="Path to model bundle directory."),
+    recursive: bool = typer.Option(False, help="Search directory recursively."),
+    output: str = typer.Option(..., help="Path to output JSONL file."),
+):
+    """Run inference on a directory of images."""
+    try:
+        pipeline = RuntimePipeline(models)
+        pipeline.infer_directory(input_dir, output, recursive)
+        typer.echo(f"Directory inference complete. Results written to {output}")
+    except Exception as e:  # noqa: BLE001
+        typer.echo(f"Directory inference failed: {e}", err=True)
+        raise typer.Exit(1)
+
+
+from container_id.streams.video import process_video
+
+
+@infer_app.command("video")
+def cli_infer_video(
+    input: str = typer.Option(..., help="Path to input video mp4."),
+    models: str = typer.Option(..., help="Path to model bundle directory."),
+    output: str = typer.Option(..., help="Path to output events.jsonl file."),
+    fps: float = typer.Option(None, help="Target processing frame rate."),
+):
+    """Run inference, tracking, and consensus on a video file."""
+    try:
+        process_video(input, output, models, fps)
+    except Exception as e:  # noqa: BLE001
+        typer.echo(f"Video inference failed: {e}", err=True)
+        raise typer.Exit(1)
+
+
+rtsp_app = typer.Typer()
+app.add_typer(rtsp_app, name="rtsp", help="RTSP commands.")
+
+from container_id.streams.rtsp import RTSPRunner
+
+
+@rtsp_app.command("run")
+def cli_rtsp_run(
+    models: str = typer.Option(..., help="Path to model bundle directory."),
+    config: str = typer.Option(..., help="Path to RTSP yaml config."),
+):
+    """Run the RTSP streaming inference pipeline."""
+    try:
+        runner = RTSPRunner(config_path=config, models_dir=models)
+        runner.run()
+    except Exception as e:  # noqa: BLE001
+        typer.echo(f"RTSP pipeline failed: {e}", err=True)
+        raise typer.Exit(1)
+
+
+@app.command("serve")
+def cli_serve(
+    models: str = typer.Option(..., help="Path to model bundle directory."),
+    host: str = typer.Option("127.0.0.1", help="Host to bind to."),
+    port: int = typer.Option(8000, help="Port to bind to."),
+) -> None:
+    """Start the local FastAPI service."""
+    import os
+
+    import typer
+
+    try:
+        import uvicorn
+
+    except ImportError:
+        typer.echo(
+            "FastAPI or Uvicorn not installed. Install with: uv add fastapi uvicorn",
+            err=True,
+        )
+        raise typer.Exit(1)
+
+    os.environ["CONTAINER_ID_MODEL_DIR"] = models
+
+    typer.echo(f"Starting API service on {host}:{port} with models from {models}")
+    uvicorn.run("container_id.service.app:app", host=host, port=port)
+
+
+if __name__ == "__main__":
+    app()

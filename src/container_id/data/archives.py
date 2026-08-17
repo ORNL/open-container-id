@@ -12,9 +12,11 @@ class ExtractedMember(BaseModel):
     size: int
     sha256: str
 
+
 class ExtractionManifest(BaseModel):
     archive_name: str
     members: list[ExtractedMember]
+
 
 def is_safe_path(target_dir: Path, file_path: str) -> bool:
     """Checks if the file_path is safe to extract into target_dir."""
@@ -33,19 +35,22 @@ def is_safe_path(target_dir: Path, file_path: str) -> bool:
 
     return True
 
+
 def safe_extract_zip(
     archive_path: Path | str,
     target_dir: Path | str,
-    max_total_size: int = 10 * 1024 * 1024 * 1024, # 10 GB default
+    max_total_size: int = 10 * 1024 * 1024 * 1024,  # 10 GB default
     max_files: int = 100000,
-    force: bool = False
+    force: bool = False,
 ) -> ExtractionManifest:
     """Safely extracts a ZIP archive."""
     archive_path = Path(archive_path)
     target_dir = Path(target_dir)
 
     if target_dir.exists() and any(target_dir.iterdir()) and not force:
-            raise FileExistsError(f"Target directory {target_dir} is not empty. Use force=True to overwrite.")
+        raise FileExistsError(
+            f"Target directory {target_dir} is not empty. Use force=True to overwrite."
+        )
 
     target_dir.mkdir(parents=True, exist_ok=True)
 
@@ -53,7 +58,7 @@ def safe_extract_zip(
     file_count = 0
     extracted_members = []
 
-    with zipfile.ZipFile(archive_path, 'r') as zf:
+    with zipfile.ZipFile(archive_path, "r") as zf:
         for member in zf.infolist():
             # Only count regular files for limits
             if not member.is_dir():
@@ -61,9 +66,13 @@ def safe_extract_zip(
                 total_size += member.file_size
 
                 if file_count > max_files:
-                    raise ValueError(f"Archive exceeds maximum file count limit of {max_files}.")
+                    raise ValueError(
+                        f"Archive exceeds maximum file count limit of {max_files}."
+                    )
                 if total_size > max_total_size:
-                    raise ValueError(f"Archive exceeds maximum size limit of {max_total_size} bytes.")
+                    raise ValueError(
+                        f"Archive exceeds maximum size limit of {max_total_size} bytes."
+                    )
 
             if not is_safe_path(target_dir, member.filename):
                 raise ValueError(f"Unsafe path detected in archive: {member.filename}")
@@ -76,14 +85,14 @@ def safe_extract_zip(
                 file_sha256 = calculate_file_sha256(extracted_file_path)
                 extracted_members.append(
                     ExtractedMember(
-                        path=member.filename,
-                        size=member.file_size,
-                        sha256=file_sha256
+                        path=member.filename, size=member.file_size, sha256=file_sha256
                     )
                 )
 
     # Write a DO NOT EDIT marker
     with open(target_dir / "DO_NOT_EDIT_SOURCE_DATA.txt", "w") as f:
-        f.write("This directory contains auto-extracted source data. Do not modify these files manually.")
+        f.write(
+            "This directory contains auto-extracted source data. Do not modify these files manually."
+        )
 
     return ExtractionManifest(archive_name=archive_path.name, members=extracted_members)

@@ -22,7 +22,9 @@ def build_canonical_dataset(config: CanonicalConfig) -> dict[str, str]:
         empty_coco = CocoDataset(
             images=[],
             annotations=[],
-            categories=[CocoCategory(id=0, name="container_number", supercategory="container")]
+            categories=[
+                CocoCategory(id=0, name="container_number", supercategory="container")
+            ],
         )
         with open(split_dir / "_annotations.coco.json", "w") as f:
             f.write(empty_coco.model_dump_json(indent=2))
@@ -32,10 +34,7 @@ def build_canonical_dataset(config: CanonicalConfig) -> dict[str, str]:
     (out_dir / "split_manifest.jsonl").touch()
     (out_dir / "changes.jsonl").touch()
 
-    summary = {
-        "status": "success",
-        "message": "Stub canonical dataset built."
-    }
+    summary = {"status": "success", "message": "Stub canonical dataset built."}
     with open(out_dir / "dataset_summary.json", "w") as f:
         json.dump(summary, f, indent=2)
 
@@ -43,6 +42,7 @@ def build_canonical_dataset(config: CanonicalConfig) -> dict[str, str]:
         f.write("# Canonical Dataset Notice\n\nAuto-generated.")
 
     return summary
+
 
 def compute_dataset_fingerprint(out_dir: Path) -> str:
     """Computes a SHA-256 fingerprint for the dataset based on manifests."""

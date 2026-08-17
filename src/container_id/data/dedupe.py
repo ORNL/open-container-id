@@ -13,6 +13,7 @@ def compute_phash(image_path: Path) -> imagehash.ImageHash:
     with Image.open(image_path) as img:
         return imagehash.phash(img, hash_size=8)
 
+
 def build_union_find(edges: list[tuple[str, str]]) -> list[list[str]]:
     """Simple union-find to group connected components."""
     parent: dict[str, str] = {}
@@ -31,8 +32,10 @@ def build_union_find(edges: list[tuple[str, str]]) -> list[list[str]]:
 
     # Initialize
     for u, v in edges:
-        if u not in parent: parent[u] = u
-        if v not in parent: parent[v] = v
+        if u not in parent:
+            parent[u] = u
+        if v not in parent:
+            parent[v] = v
 
     for u, v in edges:
         union(u, v)
@@ -54,14 +57,17 @@ def find_exact_duplicates(image_paths: list[Path]) -> list[DuplicateGroup]:
     groups = []
     for h, members in hash_map.items():
         if len(members) > 1:
-            groups.append(DuplicateGroup(
-                group_id=f"exact_{h[:16]}",
-                members=members,
-                reason="exact_hash"
-            ))
+            groups.append(
+                DuplicateGroup(
+                    group_id=f"exact_{h[:16]}", members=members, reason="exact_hash"
+                )
+            )
     return groups
 
-def find_near_duplicates(image_paths: list[Path], threshold: int = 4) -> list[DuplicateGroup]:
+
+def find_near_duplicates(
+    image_paths: list[Path], threshold: int = 4
+) -> list[DuplicateGroup]:
     """Finds near duplicates using perceptual hashing (pHash)."""
     hashes = {}
     for path in image_paths:
@@ -84,20 +90,20 @@ def find_near_duplicates(image_paths: list[Path], threshold: int = 4) -> list[Du
     groups = []
     for comp in components:
         if len(comp) > 1:
-            groups.append(DuplicateGroup(
-                group_id=f"phash_{uuid.uuid4().hex[:8]}",
-                members=comp,
-                reason="phash_near_duplicate"
-            ))
+            groups.append(
+                DuplicateGroup(
+                    group_id=f"phash_{uuid.uuid4().hex[:8]}",
+                    members=comp,
+                    reason="phash_near_duplicate",
+                )
+            )
 
     return groups
+
 
 def deduplicate_dataset(dataset_id: str, image_paths: list[Path]) -> DuplicateManifest:
     """Finds both exact and near duplicates."""
     groups = find_exact_duplicates(image_paths)
     groups.extend(find_near_duplicates(image_paths))
 
-    return DuplicateManifest(
-        dataset_id=dataset_id,
-        groups=groups
-    )
+    return DuplicateManifest(dataset_id=dataset_id, groups=groups)

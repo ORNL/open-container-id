@@ -25,7 +25,9 @@ class ReviewStore:
 
     def save(self) -> None:
         with open(self.store_path, "w", encoding="utf-8") as f:
-            f.writelines(record.model_dump_json() + "\n" for record in self.records.values())
+            f.writelines(
+                record.model_dump_json() + "\n" for record in self.records.values()
+            )
 
     def add_or_update(self, record: ReviewRecord) -> None:
         if not record.review_id:
@@ -49,7 +51,9 @@ class ReviewStore:
                 row = record.model_dump(exclude_none=False)
                 writer.writerow(row)
 
-    def import_csv(self, import_path: Path, reviewer_name: str = "local_reviewer") -> int:
+    def import_csv(
+        self, import_path: Path, reviewer_name: str = "local_reviewer"
+    ) -> int:
         """Imports review decisions from a CSV back into the store."""
         if not import_path.exists():
             return 0
@@ -69,9 +73,14 @@ class ReviewStore:
 
                 if decision:
                     record = self.records[review_id]
-                    if record.decision != decision or record.reviewed_label != reviewed_label:
+                    if (
+                        record.decision != decision
+                        or record.reviewed_label != reviewed_label
+                    ):
                         record.decision = decision
-                        record.reviewed_label = reviewed_label if reviewed_label else None
+                        record.reviewed_label = (
+                            reviewed_label if reviewed_label else None
+                        )
                         record.reviewer = reviewer_name
                         record.reviewed_at_utc = now_utc
                         record.notes = row.get("notes", "").strip() or None

@@ -20,10 +20,7 @@ def build_ocr_dataset(config: OcrConfig) -> dict[str, Any]:
     (out_dir / "manifest.jsonl").touch()
     (out_dir / "rejected.jsonl").touch()
 
-    summary = {
-        "status": "success",
-        "message": "Stub OCR dataset built."
-    }
+    summary = {"status": "success", "message": "Stub OCR dataset built."}
     with open(out_dir / "summary.json", "w") as f:
         json.dump(summary, f, indent=2)
 

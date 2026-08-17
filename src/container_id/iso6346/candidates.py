@@ -1,4 +1,3 @@
-
 from container_id.iso6346.check_digit import calculate_check_digit
 from container_id.iso6346.normalize import normalize_container_number
 from container_id.iso6346.types import ContainerID
@@ -24,7 +23,7 @@ def parse_candidate(raw_candidate: str) -> ContainerID | None:
         if check_char.isdigit():
             check_digit = int(check_char)
         else:
-            return None # invalid check digit character
+            return None  # invalid check digit character
 
     # Structural check - owner must be alphabetic
     if not owner_code.isalpha():
@@ -42,11 +41,13 @@ def parse_candidate(raw_candidate: str) -> ContainerID | None:
         owner_code=owner_code,
         category_id=category_id,
         serial_number=serial_number,
-        check_digit=check_digit
+        check_digit=check_digit,
     )
 
 
-def score_candidate(candidate: ContainerID, require_valid_check_digit: bool = True) -> int:
+def score_candidate(
+    candidate: ContainerID, require_valid_check_digit: bool = True
+) -> int:
     """
     Assigns a simple confidence/validity score to a parsed candidate.
     Higher is better. Returns -1 if it's completely invalid.
@@ -63,11 +64,13 @@ def score_candidate(candidate: ContainerID, require_valid_check_digit: bool = Tr
     # 2. Check digit validation
     if candidate.check_digit is not None:
         try:
-            expected = calculate_check_digit(f"{candidate.owner_code}{candidate.category_id}{candidate.serial_number}")
+            expected = calculate_check_digit(
+                f"{candidate.owner_code}{candidate.category_id}{candidate.serial_number}"
+            )
             if expected == candidate.check_digit:
                 score += 50
             elif require_valid_check_digit:
-                return -1 # Fails hard validation
+                return -1  # Fails hard validation
             else:
                 score -= 10
         except ValueError:

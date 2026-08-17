@@ -11,6 +11,7 @@ def create_dummy_image(path: Path, width: int, height: int) -> None:
     img = np.zeros((height, width, 3), dtype=np.uint8)
     cv2.imwrite(str(path), img)
 
+
 def test_discover_coco_splits(tmp_path: Path) -> None:
     # Setup standard layout
     (tmp_path / "train").mkdir()
@@ -30,6 +31,7 @@ def test_discover_coco_splits(tmp_path: Path) -> None:
     # It might overwrite if there's both valid and val, but test validates discovery finds them.
     assert len(splits) >= 2
 
+
 def test_validate_coco_split_valid(tmp_path: Path) -> None:
     split_dir = tmp_path / "train"
     split_dir.mkdir()
@@ -43,8 +45,16 @@ def test_validate_coco_split_valid(tmp_path: Path) -> None:
     json_path = split_dir / "_annotations.coco.json"
     data = {
         "images": [{"id": 1, "file_name": img_name, "width": 100, "height": 100}],
-        "annotations": [{"id": 1, "image_id": 1, "category_id": 1, "bbox": [10, 10, 50, 50], "area": 2500}],
-        "categories": [{"id": 1, "name": "container_number"}]
+        "annotations": [
+            {
+                "id": 1,
+                "image_id": 1,
+                "category_id": 1,
+                "bbox": [10, 10, 50, 50],
+                "area": 2500,
+            }
+        ],
+        "categories": [{"id": 1, "name": "container_number"}],
     }
     with open(json_path, "w") as f:
         json.dump(data, f)
@@ -52,6 +62,7 @@ def test_validate_coco_split_valid(tmp_path: Path) -> None:
     report = validate_coco_split(json_path, "train")
     assert report.is_valid()
     assert len(report.errors) == 0
+
 
 def test_validate_coco_split_missing_image(tmp_path: Path) -> None:
     split_dir = tmp_path / "train"
@@ -61,7 +72,7 @@ def test_validate_coco_split_missing_image(tmp_path: Path) -> None:
     data = {
         "images": [{"id": 1, "file_name": "missing.jpg", "width": 100, "height": 100}],
         "annotations": [],
-        "categories": []
+        "categories": [],
     }
     with open(json_path, "w") as f:
         json.dump(data, f)
@@ -69,6 +80,7 @@ def test_validate_coco_split_missing_image(tmp_path: Path) -> None:
     report = validate_coco_split(json_path, "train")
     assert not report.is_valid()
     assert any("Referenced image does not exist" in e for e in report.errors)
+
 
 def test_validate_coco_split_invalid_bbox(tmp_path: Path) -> None:
     split_dir = tmp_path / "train"
@@ -82,8 +94,16 @@ def test_validate_coco_split_invalid_bbox(tmp_path: Path) -> None:
     data = {
         "images": [{"id": 1, "file_name": img_name, "width": 100, "height": 100}],
         # bbox out of bounds and negative area
-        "annotations": [{"id": 1, "image_id": 1, "category_id": 1, "bbox": [150, 150, 50, 50], "area": -1}],
-        "categories": [{"id": 1, "name": "container_number"}]
+        "annotations": [
+            {
+                "id": 1,
+                "image_id": 1,
+                "category_id": 1,
+                "bbox": [150, 150, 50, 50],
+                "area": -1,
+            }
+        ],
+        "categories": [{"id": 1, "name": "container_number"}],
     }
     with open(json_path, "w") as f:
         json.dump(data, f)

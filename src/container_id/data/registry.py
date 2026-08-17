@@ -48,7 +48,7 @@ def register_sources(config: DataSourcesConfig, registry_path: Path) -> SourceRe
             url=archive_config.url,
             version=archive_config.version,
             license=archive_config.license,
-            attribution=archive_config.attribution
+            attribution=archive_config.attribution,
         )
         registry.archives.append(registered)
 

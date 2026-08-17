@@ -13,12 +13,7 @@ def discover_coco_splits(source_dir: Path | str) -> dict[str, Path]:
     splits = {}
 
     # Common split directory names
-    split_aliases = {
-        "train": "train",
-        "valid": "valid",
-        "val": "valid",
-        "test": "test"
-    }
+    split_aliases = {"train": "train", "valid": "valid", "val": "valid", "test": "test"}
 
     # Find all json files that look like coco annotations
     # typically _annotations.coco.json or similar.
@@ -33,6 +28,7 @@ def discover_coco_splits(source_dir: Path | str) -> dict[str, Path]:
             splits[split_name] = jf
 
     return splits
+
 
 import cv2
 
@@ -113,7 +109,9 @@ def validate_coco_split(json_path: Path, split_name: str) -> CocoValidationRepor
                 else:
                     h, w = cv_img.shape[:2]
                     if w != img.width or h != img.height:
-                        report.add_error(f"Image dimension mismatch for {img.file_name}. Expected {img.width}x{img.height}, got {w}x{h}.")
+                        report.add_error(
+                            f"Image dimension mismatch for {img.file_name}. Expected {img.width}x{img.height}, got {w}x{h}."
+                        )
             except Exception as e:  # noqa: BLE001
                 report.add_error(f"Error reading image {img.file_name}: {e}")
 
@@ -127,30 +125,48 @@ def validate_coco_split(json_path: Path, split_name: str) -> CocoValidationRepor
         annotation_ids.add(ann.id)
 
         if ann.image_id not in image_ids:
-            report.add_error(f"Annotation {ann.id} references missing image ID: {ann.image_id}")
+            report.add_error(
+                f"Annotation {ann.id} references missing image ID: {ann.image_id}"
+            )
         else:
             annotated_image_ids.add(ann.image_id)
 
         if ann.category_id not in category_ids:
-            report.add_error(f"Annotation {ann.id} references missing category ID: {ann.category_id}")
+            report.add_error(
+                f"Annotation {ann.id} references missing category ID: {ann.category_id}"
+            )
 
         # Box validation
         x, y, w, h = ann.bbox
         if w <= 0 or h <= 0:
-            report.add_error(f"Annotation {ann.id} has invalid dimensions (w={w}, h={h})")
+            report.add_error(
+                f"Annotation {ann.id} has invalid dimensions (w={w}, h={h})"
+            )
 
         # Check bounds (assuming image_id is valid, we'd need a lookup table to check bounds properly)
         img_match = next((i for i in dataset.images if i.id == ann.image_id), None)
         if img_match:
             # A box entirely outside the image
-            if x >= img_match.width or y >= img_match.height or (x + w) <= 0 or (y + h) <= 0:
-                report.add_error(f"Annotation {ann.id} box is entirely outside image bounds.")
+            if (
+                x >= img_match.width
+                or y >= img_match.height
+                or (x + w) <= 0
+                or (y + h) <= 0
+            ):
+                report.add_error(
+                    f"Annotation {ann.id} box is entirely outside image bounds."
+                )
             # A box partially outside
-            elif x < 0 or y < 0 or (x + w) > img_match.width or (y + h) > img_match.height:
+            elif (
+                x < 0
+                or y < 0
+                or (x + w) > img_match.width
+                or (y + h) > img_match.height
+            ):
                 report.add_error(f"Annotation {ann.id} box is partially out of bounds.")
 
         if ann.area is not None and ann.area <= 0:
-                report.add_error(f"Annotation {ann.id} has zero or negative area.")
+            report.add_error(f"Annotation {ann.id} has zero or negative area.")
 
     report.images_without_annotations = len(image_ids - annotated_image_ids)
 

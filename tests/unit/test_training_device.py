@@ -10,12 +10,14 @@ def test_get_device_info() -> None:
     assert "machine" in info
     assert info["allow_mps_cpu_fallback"] is True
 
+
 def test_run_doctor() -> None:
     report = run_doctor()
     assert "device_info" in report
     assert "checks" in report
     assert "writable_directories" in report["checks"]
     assert "python_architecture" in report["checks"]
+
 
 def test_training_run_manifest(tmp_path: Path) -> None:
     run_dir = tmp_path / "run_abc"
@@ -26,7 +28,7 @@ def test_training_run_manifest(tmp_path: Path) -> None:
         run_type="detector",
         config=config,
         dataset_fingerprint="abc123hash",
-        allow_mps_cpu_fallback=False
+        allow_mps_cpu_fallback=False,
     )
 
     assert run.manifest.run_id == "run_abc"

@@ -41,6 +41,7 @@ uv run container-id data build-ocr --config configs/data/ocr.yaml
 ### 3. Detector Trainer
 
 ```bash
+# Note: This has now been implemented.
 uv sync --extra train
 uv run container-id train detector --config configs/train/detector-rfdetr-small.yaml
 uv run container-id evaluate detector --run-dir runs/detector/<run-id>
@@ -50,6 +51,7 @@ uv run container-id export detector --run-dir runs/detector/<run-id>
 ### 4. OCR Trainer
 
 ```bash
+# Note: The OCR trainer has now been implemented.
 uv run container-id train ocr --config configs/train/ocr-crnn-mobilenet-v3-small.yaml
 uv run container-id evaluate ocr --run-dir runs/ocr/<run-id>
 uv run container-id export ocr --run-dir runs/ocr/<run-id>

@@ -13,10 +13,13 @@ def oscar_config() -> OscarConfig:
         client_id="test-client",
         api_key="test-key",
         system_id="test_lane",
-        osh_path_root="/api/sensorhub"
+        osh_path_root="/api/sensorhub",
     )
 
-def test_get_alarming_occupancies(oscar_config: OscarConfig, monkeypatch: pytest.MonkeyPatch) -> None:
+
+def test_get_alarming_occupancies(
+    oscar_config: OscarConfig, monkeypatch: pytest.MonkeyPatch
+) -> None:
     client = OscarClient(oscar_config)
     mock_response = MagicMock()
     mock_response.json.return_value = {
@@ -25,19 +28,19 @@ def test_get_alarming_occupancies(oscar_config: OscarConfig, monkeypatch: pytest
                 "occupancyObsId": "obs-1",
                 "gammaAlarm": True,
                 "videoPaths": ["video1.mp4"],
-                "controlStreamId": "stream-1"
+                "controlStreamId": "stream-1",
             },
             {
                 "occupancyObsId": "obs-2",
                 "gammaAlarm": False,
                 "neutronAlarm": False,
-                "videoPaths": ["video2.mp4"]
+                "videoPaths": ["video2.mp4"],
             },
             {
                 "occupancyObsId": "obs-3",
                 "neutronAlarm": True,
-                "videoPaths": ["video3.mp4"]
-            }
+                "videoPaths": ["video3.mp4"],
+            },
         ]
     }
 
@@ -51,10 +54,13 @@ def test_get_alarming_occupancies(oscar_config: OscarConfig, monkeypatch: pytest
     assert alarming[0]["controlStreamId"] == "stream-1"
     assert alarming[1]["controlStreamId"] == "test_lane_adjudicationControl"
 
-def test_submit_container_number(oscar_config: OscarConfig, monkeypatch: pytest.MonkeyPatch) -> None:
+
+def test_submit_container_number(
+    oscar_config: OscarConfig, monkeypatch: pytest.MonkeyPatch
+) -> None:
     client = OscarClient(oscar_config)
 
-    def mock_post(url: str, json: dict) -> MagicMock: # type: ignore[type-arg]
+    def mock_post(url: str, json: dict) -> MagicMock:  # type: ignore[type-arg]
         assert "stream-1" in url
         assert json["parameters"]["vehicleId"] == "MSKU1234567"
         assert json["parameters"]["occupancyObsId"] == "obs-1"

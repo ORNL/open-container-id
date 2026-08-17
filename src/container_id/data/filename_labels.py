@@ -12,7 +12,9 @@ from container_id.iso6346.check_digit import calculate_check_digit
 class LabelStatus(str, Enum):
     ACCEPTED_CHECK_DIGIT_VALID = "accepted_check_digit_valid"
     CANDIDATE_INVALID_CHECK_DIGIT = "candidate_invalid_check_digit"
-    CANDIDATE_NONSTANDARD_EQUIPMENT_CATEGORY = "candidate_nonstandard_equipment_category"
+    CANDIDATE_NONSTANDARD_EQUIPMENT_CATEGORY = (
+        "candidate_nonstandard_equipment_category"
+    )
     AMBIGUOUS_MULTIPLE_CANDIDATES = "ambiguous_multiple_candidates"
     NO_CANDIDATE = "no_candidate"
     SOURCE_NAME_MISSING = "source_name_missing"
@@ -20,10 +22,12 @@ class LabelStatus(str, Enum):
     MANUAL_OVERRIDE_INVALID_BUT_CONFIRMED = "manual_override_invalid_but_confirmed"
     REJECTED = "rejected"
 
+
 class ParsedLabel(BaseModel):
     normalized_label: str | None
     status: LabelStatus
     raw_source: str
+
 
 def extract_preferred_filename(image: CocoImage) -> str | None:
     if image.extra:
@@ -40,6 +44,7 @@ def extract_preferred_filename(image: CocoImage) -> str | None:
 
     return None
 
+
 def clean_filename(filename: str) -> str:
     base = Path(filename).name
     rf_pattern = re.compile(r"(_[a-zA-Z0-9]+\.rf\.[a-fA-F0-9]+)(\.[a-zA-Z0-9]+)?$")
@@ -48,15 +53,18 @@ def clean_filename(filename: str) -> str:
     exts = [".jpg", ".jpeg", ".png", ".webp"]
     for ext in exts:
         if base.lower().endswith(ext):
-            base = base[:-len(ext)]
+            base = base[: -len(ext)]
 
     base = base.upper()
     return base
 
+
 def parse_filename_label(image: CocoImage) -> ParsedLabel:
     raw_name = extract_preferred_filename(image)
     if not raw_name:
-        return ParsedLabel(normalized_label=None, status=LabelStatus.SOURCE_NAME_MISSING, raw_source="")
+        return ParsedLabel(
+            normalized_label=None, status=LabelStatus.SOURCE_NAME_MISSING, raw_source=""
+        )
 
     cleaned = clean_filename(raw_name)
 
@@ -65,7 +73,7 @@ def parse_filename_label(image: CocoImage) -> ParsedLabel:
     # Let's replace separators with empty string.
     # But only inside the sequence?
     # If we just remove all non-alnums:
-    normalized = re.sub(r'[^A-Z0-9]', '', cleaned)
+    normalized = re.sub(r"[^A-Z0-9]", "", cleaned)
 
     # Require it to be anchored at the START to avoid deep substring matches like OORA2021082
     # e.g. ^[A-Z]{3}[UJZ][0-9]{7}
@@ -85,25 +93,31 @@ def parse_filename_label(image: CocoImage) -> ParsedLabel:
     # are followed by either end-of-string or a digit (like "-1" becoming "1").
     # If it is preceded by a letter, it's probably part of a word.
 
-    pattern = re.compile(r'[A-Z]{3}[UJZ][0-9]{7}')
+    pattern = re.compile(r"[A-Z]{3}[UJZ][0-9]{7}")
     candidates = pattern.findall(normalized)
 
     if len(candidates) == 0:
-        nonstd_pattern = re.compile(r'(?<![A-Z])[A-Z]{4}[0-9]{7}')
+        nonstd_pattern = re.compile(r"(?<![A-Z])[A-Z]{4}[0-9]{7}")
         nonstd_candidates = nonstd_pattern.findall(normalized)
         if len(nonstd_candidates) == 1:
             return ParsedLabel(
                 normalized_label=nonstd_candidates[0],
                 status=LabelStatus.CANDIDATE_NONSTANDARD_EQUIPMENT_CATEGORY,
-                raw_source=raw_name
+                raw_source=raw_name,
             )
-        return ParsedLabel(normalized_label=None, status=LabelStatus.NO_CANDIDATE, raw_source=raw_name)
+        return ParsedLabel(
+            normalized_label=None, status=LabelStatus.NO_CANDIDATE, raw_source=raw_name
+        )
 
     if len(candidates) > 1:
         if len(set(candidates)) == 1:
             candidates = [candidates[0]]
         else:
-            return ParsedLabel(normalized_label=None, status=LabelStatus.AMBIGUOUS_MULTIPLE_CANDIDATES, raw_source=raw_name)
+            return ParsedLabel(
+                normalized_label=None,
+                status=LabelStatus.AMBIGUOUS_MULTIPLE_CANDIDATES,
+                raw_source=raw_name,
+            )
 
     candidate = candidates[0]
 
@@ -113,12 +127,25 @@ def parse_filename_label(image: CocoImage) -> ParsedLabel:
         calculated = calculate_check_digit(body)
 
         if calculated == expected_check:
-            return ParsedLabel(normalized_label=candidate, status=LabelStatus.ACCEPTED_CHECK_DIGIT_VALID, raw_source=raw_name)
+            return ParsedLabel(
+                normalized_label=candidate,
+                status=LabelStatus.ACCEPTED_CHECK_DIGIT_VALID,
+                raw_source=raw_name,
+            )
         else:
-            return ParsedLabel(normalized_label=candidate, status=LabelStatus.CANDIDATE_INVALID_CHECK_DIGIT, raw_source=raw_name)
+            return ParsedLabel(
+                normalized_label=candidate,
+                status=LabelStatus.CANDIDATE_INVALID_CHECK_DIGIT,
+                raw_source=raw_name,
+            )
 
     except ValueError:
-        return ParsedLabel(normalized_label=candidate, status=LabelStatus.NO_CANDIDATE, raw_source=raw_name)
+        return ParsedLabel(
+            normalized_label=candidate,
+            status=LabelStatus.NO_CANDIDATE,
+            raw_source=raw_name,
+        )
+
 
 class ManualOverride(BaseModel):
     source_dataset_id: str
@@ -128,6 +155,7 @@ class ManualOverride(BaseModel):
     reviewer: str
     reviewed_at_utc: str
     notes: str | None = None
+
 
 def load_manual_overrides(csv_path: Path | str) -> dict[str, ManualOverride]:
     csv_path = Path(csv_path)
@@ -150,7 +178,7 @@ def load_manual_overrides(csv_path: Path | str) -> dict[str, ManualOverride]:
                 status=status,
                 reviewer=row["reviewer"],
                 reviewed_at_utc=row["reviewed_at_utc"],
-                notes=row.get("notes")
+                notes=row.get("notes"),
             )
             overrides[override.exported_file_name] = override
 

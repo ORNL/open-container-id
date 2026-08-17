@@ -8,12 +8,14 @@ class CocoCategory(BaseModel):
     name: str
     supercategory: str | None = None
 
+
 class CocoImage(BaseModel):
     id: int
     file_name: str
     width: int
     height: int
     extra: dict[str, Any] | None = None
+
 
 class CocoAnnotation(BaseModel):
     id: int
@@ -24,15 +26,18 @@ class CocoAnnotation(BaseModel):
     iscrowd: int | None = 0
     segmentation: list[list[float]] | None = None
 
+
 class CocoDataset(BaseModel):
     images: list[CocoImage]
     annotations: list[CocoAnnotation]
     categories: list[CocoCategory]
 
+
 class ClassConfirmation(BaseModel):
     source_dataset_id: str
     source_class_name: str
     target_class_name: str
+
 
 class AuditAcknowledgment(BaseModel):
     audit_dir: str
@@ -40,14 +45,17 @@ class AuditAcknowledgment(BaseModel):
     confirmations: list[ClassConfirmation]
     acknowledged_at_utc: str
 
+
 class DuplicateGroup(BaseModel):
     group_id: str
-    members: list[str] # List of image file paths or image IDs
-    reason: str # 'exact_hash', 'phash_near_duplicate', 'source_family'
+    members: list[str]  # List of image file paths or image IDs
+    reason: str  # 'exact_hash', 'phash_near_duplicate', 'source_family'
+
 
 class DuplicateManifest(BaseModel):
     dataset_id: str
     groups: list[DuplicateGroup]
+
 
 class CanonicalAnnotation(BaseModel):
     source_annotation_id: int
@@ -57,6 +65,7 @@ class CanonicalAnnotation(BaseModel):
     bbox_area: float
     orientation_class: str
     review_status: str
+
 
 class CanonicalSample(BaseModel):
     schema_version: int = 1
@@ -88,6 +97,7 @@ class CanonicalSample(BaseModel):
     canonical_split: str | None = None
     license: str | None = None
 
+
 class ReviewRecord(BaseModel):
     review_id: str
     sample_id: str
@@ -102,6 +112,7 @@ class ReviewRecord(BaseModel):
     notes: str | None = None
     audit_run_id: str | None = None
     source_image_sha256: str | None = None
+
 
 class RunManifest(BaseModel):
     run_id: str

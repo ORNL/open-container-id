@@ -25,29 +25,29 @@ For detailed information on each task, please refer to the corresponding issue f
 - [x] Issue 13: Implement MPS device doctor and training run manifests.
 
 ### Milestone 5: Model Training & Export
-- [ ] Issue 14: Implement RF-DETR Small training adapter.
-- [ ] Issue 15: Implement detector metrics and threshold calibration.
-- [ ] Issue 16: Implement detector ONNX export and parity tests.
-- [ ] Issue 17: Implement docTR CRNN training adapter.
-- [ ] Issue 18: Implement OCR metrics and error analysis.
-- [ ] Issue 19: Implement recognizer ONNX export and parity tests.
+- [x] Issue 14: Implement RF-DETR Small training adapter.
+- [x] Issue 15: Implement detector metrics and threshold calibration.
+- [x] Issue 16: Implement detector ONNX export and parity tests.
+- [x] Issue 17: Implement docTR CRNN training adapter.
+- [x] Issue 18: Implement OCR metrics and error analysis.
+- [x] Issue 19: Implement recognizer ONNX export and parity tests.
 
 ### Milestone 6: Runtime and API
-- [ ] Issue 20: Implement model-bundle manifest and verification.
-- [ ] Issue 21: Implement ONNX detector runtime.
-- [ ] Issue 22: Implement ONNX recognizer runtime.
-- [ ] Issue 23: Implement crop-quality and orientation transforms.
-- [ ] Issue 25: Implement still-image and directory inference CLI.
+- [x] Issue 20: Implement model-bundle manifest and verification.
+- [x] Issue 21: Implement ONNX detector runtime.
+- [x] Issue 22: Implement ONNX recognizer runtime.
+- [x] Issue 23: Implement crop-quality and orientation transforms.
+- [x] Issue 25: Implement still-image and directory inference CLI.
 
 ### Milestone 7: Advanced Tracking and Streams
-- [ ] Issue 26: Implement IoU tracker.
-- [ ] Issue 27: Implement temporal consensus and duplicate suppression.
-- [ ] Issue 28: Implement video inference.
-- [ ] Issue 29: Implement RTSP decoder, bounded queue, and reconnect.
+- [x] Issue 26: Implement IoU tracker.
+- [x] Issue 27: Implement temporal consensus and duplicate suppression.
+- [x] Issue 28: Implement video inference.
+- [x] Issue 29: Implement RTSP decoder, bounded queue, and reconnect.
 
 ### External Integrations
 
-- [ ] Issue 41: OSCAR OCR Integration API
+- [x] Issue 41: OSCAR OCR Integration API
 
 ### Milestone 8: Deployment and Polish
 - [ ] Issue 30: Implement local FastAPI service.

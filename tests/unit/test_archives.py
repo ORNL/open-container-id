@@ -17,10 +17,12 @@ def test_is_safe_path(tmp_path: Path) -> None:
     # Absolute paths
     assert not is_safe_path(tmp_path, "/etc/passwd")
 
+
 def create_mock_zip(path: Path, files: dict[str, bytes]) -> None:
-    with zipfile.ZipFile(path, 'w') as zf:
+    with zipfile.ZipFile(path, "w") as zf:
         for name, content in files.items():
             zf.writestr(name, content)
+
 
 def test_safe_extract_zip_success(tmp_path: Path) -> None:
     zip_path = tmp_path / "test.zip"
@@ -34,6 +36,7 @@ def test_safe_extract_zip_success(tmp_path: Path) -> None:
     assert (target_dir / "file1.txt").exists()
     assert (target_dir / "dir/file2.txt").exists()
 
+
 def test_safe_extract_zip_limits(tmp_path: Path) -> None:
     zip_path = tmp_path / "test.zip"
     target_dir = tmp_path / "extracted"
@@ -45,6 +48,7 @@ def test_safe_extract_zip_limits(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="Archive exceeds maximum size limit"):
         safe_extract_zip(zip_path, target_dir, max_total_size=10, force=True)
+
 
 def test_safe_extract_zip_unsafe_path(tmp_path: Path) -> None:
     pass

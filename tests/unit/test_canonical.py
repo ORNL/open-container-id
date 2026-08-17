@@ -23,4 +23,4 @@ def test_build_canonical_dataset(tmp_path: Path) -> None:
 
     fp = compute_dataset_fingerprint(out_dir)
     assert fp is not None
-    assert len(fp) == 64 # sha256 hex length
+    assert len(fp) == 64  # sha256 hex length

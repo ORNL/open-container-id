@@ -28,11 +28,16 @@ class OscarClient:
         # We will mock the extraction for now based on the prompt's instructions.
         for obs in data.get("observations", []):
             if obs.get("gammaAlarm") is True or obs.get("neutronAlarm") is True:
-                alarming_occupancies.append({
-                    "occupancyObsId": obs.get("occupancyObsId"),
-                    "videoPaths": obs.get("videoPaths", []),
-                    "controlStreamId": obs.get("controlStreamId", f"{self.config.system_id}_adjudicationControl")
-                })
+                alarming_occupancies.append(
+                    {
+                        "occupancyObsId": obs.get("occupancyObsId"),
+                        "videoPaths": obs.get("videoPaths", []),
+                        "controlStreamId": obs.get(
+                            "controlStreamId",
+                            f"{self.config.system_id}_adjudicationControl",
+                        ),
+                    }
+                )
 
         return alarming_occupancies
 
@@ -43,7 +48,9 @@ class OscarClient:
         response.raise_for_status()
         return response.content
 
-    def submit_container_number(self, control_stream_id: str, occupancy_obs_id: str, container_number: str) -> None:
+    def submit_container_number(
+        self, control_stream_id: str, occupancy_obs_id: str, container_number: str
+    ) -> None:
         """Submits the extracted container number back to OSCAR."""
         url = f"{self.config.endpoint}{self.config.osh_path_root}/sos/controlstreams/{control_stream_id}/commands"
 
@@ -57,7 +64,7 @@ class OscarClient:
                 "filePathCount": 0,
                 "filePaths": [],
                 "occupancyObsId": occupancy_obs_id,
-                "vehicleId": container_number
+                "vehicleId": container_number,
             }
         }
 
