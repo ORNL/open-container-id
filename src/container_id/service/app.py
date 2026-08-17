@@ -12,7 +12,8 @@ logger = logging.getLogger(__name__)
 # Global pipeline instance initialized on startup
 _pipeline: RuntimePipeline | None = None
 
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
@@ -23,7 +24,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         logger.info(f"Loading RuntimePipeline from {bundle_dir}...")
         _pipeline = RuntimePipeline(bundle_dir)
         logger.info("RuntimePipeline loaded successfully.")
-    except Exception as e: # noqa: BLE001
+    except Exception as e:  # noqa: BLE001
         logger.error(f"Failed to load RuntimePipeline: {e}")
         # Not raising an exception immediately so the app can start (perhaps for healthchecks),
         # but the /infer endpoint will return 503 if _pipeline is None.
@@ -42,8 +43,10 @@ app = FastAPI(
 )
 
 
-@app.get("/health")
 from typing import Any
+
+
+@app.get("/health")
 async def health_check() -> dict[str, Any]:
     """Simple health check endpoint."""
     return {"status": "ok", "model_loaded": _pipeline is not None}
@@ -66,7 +69,7 @@ async def infer_image(file: UploadFile = File(...)) -> JSONResponse:
 
     try:
         contents = await file.read()
-    except Exception as e: # noqa: BLE001 # noqa: BLE001
+    except Exception as e:  # noqa: BLE001 # noqa: BLE001
         raise HTTPException(status_code=400, detail=f"Failed to read file: {e}")
 
     try:
@@ -91,29 +94,33 @@ async def infer_image(file: UploadFile = File(...)) -> JSONResponse:
         best_score = -1.0
 
         for det in result.get("detections", []):
-            formatted_detections.append({
-                "bbox": det.bbox,
-                "score": det.score,
-                "text": det.text,
-                "text_score": det.text_score
-            })
+            formatted_detections.append(
+                {
+                    "bbox": det.bbox,
+                    "score": det.score,
+                    "text": det.text,
+                    "text_score": det.text_score,
+                }
+            )
 
             # Find the detection with the best valid container ID
             if det.text and det.text_score is not None and det.text_score > best_score:
-                    # In this simple logic, we just take the highest text score.
-                    # Real consensus tracking is for video, but for single image we just pick the best.
-                    best_container_number = det.text
-                    best_score = det.text_score
+                # In this simple logic, we just take the highest text score.
+                # Real consensus tracking is for video, but for single image we just pick the best.
+                best_container_number = det.text
+                best_score = det.text_score
 
-        return JSONResponse(content={
-            "container_number": best_container_number,
-            "container_score": best_score if best_container_number else None,
-            "detections": formatted_detections
-        })
+        return JSONResponse(
+            content={
+                "container_number": best_container_number,
+                "container_score": best_score if best_container_number else None,
+                "detections": formatted_detections,
+            }
+        )
 
     except Exception as e:
         logger.exception("Inference error")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Inference error: {e}"
+            detail=f"Inference error: {e}",
         )

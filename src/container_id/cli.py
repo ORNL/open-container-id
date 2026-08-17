@@ -563,7 +563,6 @@ def cli_infer_video(
         raise typer.Exit(1)
 
 
-
 rtsp_app = typer.Typer()
 app.add_typer(rtsp_app, name="rtsp", help="RTSP commands.")
 
@@ -573,13 +572,13 @@ from container_id.streams.rtsp import RTSPRunner
 @rtsp_app.command("run")
 def cli_rtsp_run(
     models: str = typer.Option(..., help="Path to model bundle directory."),
-    config: str = typer.Option(..., help="Path to RTSP yaml config.")
+    config: str = typer.Option(..., help="Path to RTSP yaml config."),
 ):
     """Run the RTSP streaming inference pipeline."""
     try:
         runner = RTSPRunner(config_path=config, models_dir=models)
         runner.run()
-    except Exception as e: # noqa: BLE001
+    except Exception as e:  # noqa: BLE001
         typer.echo(f"RTSP pipeline failed: {e}", err=True)
         raise typer.Exit(1)
 
@@ -588,7 +587,7 @@ def cli_rtsp_run(
 def cli_serve(
     models: str = typer.Option(..., help="Path to model bundle directory."),
     host: str = typer.Option("127.0.0.1", help="Host to bind to."),
-    port: int = typer.Option(8000, help="Port to bind to.")
+    port: int = typer.Option(8000, help="Port to bind to."),
 ) -> None:
     """Start the local FastAPI service."""
     import os
@@ -599,13 +598,17 @@ def cli_serve(
         import uvicorn
 
     except ImportError:
-        typer.echo("FastAPI or Uvicorn not installed. Install with: uv add fastapi uvicorn", err=True)
+        typer.echo(
+            "FastAPI or Uvicorn not installed. Install with: uv add fastapi uvicorn",
+            err=True,
+        )
         raise typer.Exit(1)
 
     os.environ["CONTAINER_ID_MODEL_DIR"] = models
 
     typer.echo(f"Starting API service on {host}:{port} with models from {models}")
     uvicorn.run("container_id.service.app:app", host=host, port=port)
+
 
 if __name__ == "__main__":
     app()

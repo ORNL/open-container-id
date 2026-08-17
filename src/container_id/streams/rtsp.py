@@ -4,9 +4,8 @@ import random
 import re
 import threading
 import time
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
 
 from container_id.config.models import RTSPConfig
 from container_id.runtime.consensus import ConsensusEngine
@@ -59,7 +58,7 @@ class RTSPRunner:
         # Options for av.open
         options = {
             "rtsp_transport": self.config.camera.transport,
-            "stimeout": str(self.config.camera.connect_timeout_seconds * 1000000)
+            "stimeout": str(self.config.camera.connect_timeout_seconds * 1000000),
         }
 
         while self.running:
@@ -79,7 +78,7 @@ class RTSPRunner:
                     stream_fps = float(stream.average_rate)
                     if self.fps < stream_fps:
                         # calculate how many frames to skip approximately
-                        pass # PyAV timestamps are better.
+                        pass  # PyAV timestamps are better.
 
                 last_processed_time = time.monotonic()
                 target_interval = 1.0 / self.fps if self.fps > 0 else 0
@@ -96,33 +95,38 @@ class RTSPRunner:
                     last_processed_time = now
 
                     # Convert to numpy (BGR for cv2 compatibility used elsewhere)
-                    img = frame.to_ndarray(format='bgr24')
+                    img = frame.to_ndarray(format="bgr24")
 
                     # PTS to real timestamp approximation
                     utc_now = datetime.now(UTC)
 
                     self.queue.put({"image": img, "timestamp": utc_now})
 
-            except Exception as e: # noqa: BLE001
+            except Exception as e:  # noqa: BLE001
                 if self.running:
-                    logger.error(f"Decoder error or disconnected: {e}. Reconnecting in {delay} seconds...")
+                    logger.error(
+                        f"Decoder error or disconnected: {e}. Reconnecting in {delay} seconds..."
+                    )
                     time.sleep(delay)
                     # Exponential backoff with jitter
-                    jitter = delay * reconnect_conf.jitter_fraction * random.uniform(-1, 1)
-                    delay = min(reconnect_conf.maximum_delay_seconds, delay * reconnect_conf.multiplier + jitter)
+                    jitter = (
+                        delay * reconnect_conf.jitter_fraction * random.uniform(-1, 1)
+                    )
+                    delay = min(
+                        reconnect_conf.maximum_delay_seconds,
+                        delay * reconnect_conf.multiplier + jitter,
+                    )
             finally:
                 if container:
                     try:
                         container.close()
-                    except Exception: # noqa: BLE001
+                    except Exception:  # noqa: BLE001
                         pass
 
     def _consumer_thread(self):
         pipeline = RuntimePipeline(str(self.models_dir))
         tracker = IoUTracker(iou_threshold=0.30, max_missed_frames=10)
-        consensus = ConsensusEngine(
-            camera_id=self.camera_id
-        )
+        consensus = ConsensusEngine(camera_id=self.camera_id)
 
         output_file = Path("events.local.jsonl")
 
@@ -146,7 +150,7 @@ class RTSPRunner:
                             logger.info(f"Event emitted: {event.container_number}")
                             out_f.write(event.model_dump_json() + "\n")
                             out_f.flush()
-                except Exception as e: # noqa: BLE001
+                except Exception as e:  # noqa: BLE001
                     logger.error(f"Consumer inference error: {e}")
 
     def run(self):

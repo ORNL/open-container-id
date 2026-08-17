@@ -73,6 +73,7 @@ class ReconnectConfig(BaseModel):
     multiplier: int = 2
     jitter_fraction: float = 0.20
 
+
 class CameraConfig(BaseModel):
     id: str = "gate-1"
     url_env: str = "CONTAINER_ID_RTSP_URL"
@@ -81,6 +82,7 @@ class CameraConfig(BaseModel):
     connect_timeout_seconds: int = 10
     read_timeout_seconds: int = 10
     reconnect: ReconnectConfig = ReconnectConfig()
+
 
 class RTSPConfig(BaseModel):
     schema_version: int = 1

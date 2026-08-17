@@ -1,15 +1,16 @@
-import pytest
 from container_id.streams.queue import LatestFrameQueue
 
+
 def test_latest_frame_queue_puts_and_gets():
-    q = LatestFrameQueue(max_size=3)
+    q = LatestFrameQueue(maxsize=3)
     assert q.empty()
     q.put(1)
     assert not q.empty()
     assert q.get() == 1
 
+
 def test_latest_frame_queue_drops_oldest():
-    q = LatestFrameQueue(max_size=2)
+    q = LatestFrameQueue(maxsize=2)
     q.put(1)
     q.put(2)
     q.put(3)

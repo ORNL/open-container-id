@@ -2525,6 +2525,7 @@ Create clean protocols independent of training frameworks.
 class Detector(Protocol):
     def detect(self, images: Sequence[np.ndarray]) -> list[list[Detection]]: ...
 
+
 class Recognizer(Protocol):
     def recognize(self, crops: Sequence[np.ndarray]) -> list[list[OCRCandidate]]: ...
 ```
@@ -2537,6 +2538,7 @@ class Detection(BaseModel):
     confidence: float
     bbox_xyxy: tuple[float, float, float, float]
 
+
 class OCRCandidate(BaseModel):
     raw_text: str
     normalized_text: str | None
@@ -2545,6 +2547,7 @@ class OCRCandidate(BaseModel):
     structure_valid: bool
     check_digit_valid: bool
     corrections: list[str]
+
 
 class ContainerEvent(BaseModel):
     event_id: str
