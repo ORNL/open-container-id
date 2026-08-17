@@ -1,0 +1,40 @@
+schema_version: 1
+model:
+  family: doctr
+  architecture: crnn_mobilenet_v3_small
+  pretrained: true
+  vocabulary: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  max_length: 11
+  input_height: 32
+  input_width: 128
+data:
+  dataset_dir: data/processed/ocr-v1
+  include_statuses:
+    - accepted_check_digit_valid
+    - manual_override_valid
+training:
+  device: auto
+  seed: 6346
+  epochs: 50
+  batch_size: 64
+  learning_rate: 0.001
+  optimizer: adamw
+  weight_decay: 0.0001
+  scheduler: cosine
+  early_stopping: true
+  early_stopping_patience: 10
+  freeze_backbone_epochs: 3
+  amp: false
+  tensorboard: true
+augmentation:
+  grayscale_probability: 0.10
+  color_jitter_probability: 0.20
+  shadow_probability: 0.30
+  gaussian_noise_probability: 0.15
+  gaussian_blur_probability: 0.25
+  motion_blur_probability: 0.15
+  perspective_probability: 0.25
+  jpeg_compression_probability: 0.20
+  crop_jitter_probability: 0.50
+output:
+  root: runs/ocr

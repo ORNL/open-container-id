@@ -1,0 +1,46 @@
+.env
+.env.*
+!.env.example
+.DS_Store
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Raw and generated data
+data/raw/downloads/*
+!data/raw/downloads/.gitkeep
+data/raw/extracted/*
+!data/raw/extracted/.gitkeep
+data/interim/*
+!data/interim/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/reviews/*
+!data/reviews/.gitkeep
+data/manifests/*.local.*
+
+# Training outputs and checkpoints
+runs/
+checkpoints/
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+
+# Exported models and release bundles
+models/*.onnx
+models/*.mlpackage/
+models/*.pte
+models/*.trt
+models/*.engine
+models/*.tflite
+dist/models/
+
+# Local camera output
+captures/
+recordings/
+annotated/
+events.local.jsonl
