@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below, along with the foundational tools and datasets."
+authors:
+  - family-names: "Developer"
+    given-names: "Open Container ID"
+title: "Open Container ID: Open-Source Intermodal Container Number Recognition"
+version: 0.1.0
+date-released: 2024-01-01
+url: "https://github.com/your-org/open-container-id"
+repository-code: "https://github.com/your-org/open-container-id"
+license: Apache-2.0
+type: software
+
+references:
+  - type: dataset
+    title: "Container Number Detection, Version 7"
+    authors:
+      - name: "PranW"
+    url: "https://universe.roboflow.com/pranw/container-number-detection-wcunq/dataset/7"
+    year: 2024
+    license: "CC-BY-4.0"
+
+  - type: dataset
+    title: "Container number, Version 1"
+    authors:
+      - name: "dasad"
+    url: "https://universe.roboflow.com/dasad/container-number-pmov4-tvflz/dataset/1"
+    year: 2024
+    license: "CC-BY-4.0"
+
+  - type: software
+    title: "RF-DETR: Object Detection using Transformers"
+    url: "https://rfdetr.roboflow.com/"
+    authors:
+      - name: "Roboflow"
+
+  - type: software
+    title: "docTR: Document Text Recognition"
+    url: "https://github.com/mindee/doctr"
+    authors:
+      - name: "Mindee"
