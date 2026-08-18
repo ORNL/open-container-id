@@ -4,6 +4,7 @@ import random
 import re
 import threading
 import time
+import typing
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -62,10 +63,10 @@ class RTSPRunner:
         }
 
         while self.running:
-            container: av.container.InputContainer | av.container.OutputContainer | None = None
+            container: av.container.InputContainer | None = None
             try:
                 logger.info(f"Connecting to {redact_uri(self.uri)}...")
-                container = av.open(self.uri, options=options)
+                container = typing.cast(av.container.InputContainer, av.open(self.uri, options=options))
                 if container is None:
                     continue
                 stream = container.streams.video[0]
