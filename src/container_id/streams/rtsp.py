@@ -62,7 +62,7 @@ class RTSPRunner:
         }
 
         while self.running:
-            container = None
+            container: av.container.InputContainer | None = None
             try:
                 logger.info(f"Connecting to {redact_uri(self.uri)}...")
                 container = av.open(self.uri, options=options)
