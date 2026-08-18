@@ -118,7 +118,7 @@ class RTSPRunner:
                 if container:
                     try:
                         container.close()
-                    except Exception:  # noqa: BLE001
+                    except Exception:  # noqa: BLE001, S110
                         pass
 
     def _consumer_thread(self):
