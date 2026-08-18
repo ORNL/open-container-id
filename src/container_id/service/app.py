@@ -46,13 +46,13 @@ app = FastAPI(
 from typing import Any
 
 
-@app.get("/health")
+@app.get("/health")  # type: ignore
 async def health_check() -> dict[str, Any]:
     """Simple health check endpoint."""
     return {"status": "ok", "model_loaded": _pipeline is not None}
 
 
-@app.post("/infer")
+@app.post("/infer")  # type: ignore
 async def infer_image(file: UploadFile = File(...)) -> JSONResponse:
     """
     Run the full inference pipeline on an uploaded image.

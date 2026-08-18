@@ -1,6 +1,7 @@
 import uuid
 from collections import defaultdict
 from datetime import datetime
+from typing import Any
 
 from container_id.runtime.interfaces import ContainerEvent
 from container_id.runtime.tracking import Track
@@ -61,7 +62,7 @@ class ConsensusEngine:
 
         self.suppressor = DuplicateSuppressor(duplicate_suppression_seconds)
 
-    def _calculate_candidate_weight(self, track: Track, candidate_dict: dict) -> float:
+    def _calculate_candidate_weight(self, track: Track, candidate_dict: dict[str, Any]) -> float:
         """
         Calculate the weight of a specific frame candidate.
         candidate_dict looks like:
@@ -94,7 +95,7 @@ class ConsensusEngine:
         transform_factor = 1.0 if transform == "identity" else 0.9
         correction_factor = 1.0 if not corrections else 0.8
 
-        return det_conf * ocr_conf * crop_qual * transform_factor * correction_factor
+        return float(det_conf * ocr_conf * crop_qual * transform_factor * correction_factor)
 
     def process_track(
         self, track: Track, current_timestamp: datetime
@@ -111,10 +112,10 @@ class ConsensusEngine:
             return None
 
         # Group by normalized text
-        scores_by_text = defaultdict(float)
-        frames_by_text = defaultdict(int)
+        scores_by_text: dict[str, float] = defaultdict(float)
+        frames_by_text: dict[str, int] = defaultdict(int)
         best_candidate_obj_by_text = {}
-        max_ocr_conf_by_text = defaultdict(float)
+        max_ocr_conf_by_text: dict[str, float] = defaultdict(float)
 
         for c_dict in recent_candidates:
             c = c_dict["candidate"]
@@ -149,7 +150,7 @@ class ConsensusEngine:
             return None
 
         # Find the best candidate
-        best_text = max(scores_by_text, key=scores_by_text.get)
+        best_text = max(scores_by_text, key=lambda k: scores_by_text[k])
         best_score = scores_by_text[best_text]
         support_frames = frames_by_text[best_text]
 

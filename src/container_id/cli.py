@@ -416,7 +416,7 @@ from container_id.evaluation.detector import evaluate_detector
 @evaluate_app.command("detector")
 def cli_evaluate_detector(
     run_dir: str = typer.Option(..., help="Path to the training run directory."),
-):
+) -> None:
     """Evaluate the detector model."""
     try:
         evaluate_detector(run_dir)
@@ -434,7 +434,7 @@ from container_id.evaluation.ocr import evaluate_ocr
 @evaluate_app.command("ocr")
 def cli_evaluate_ocr(
     run_dir: str = typer.Option(..., help="Path to the training run directory."),
-):
+) -> None:
     """Evaluate the OCR model."""
     try:
         evaluate_ocr(run_dir)
@@ -458,7 +458,7 @@ def cli_bundle_build(
     recognizer: str = typer.Option(..., help="Path to exported recognizer.onnx"),
     config: str = typer.Option(..., help="Path to runtime default config"),
     output: str = typer.Option(..., help="Path to output bundle directory"),
-):
+) -> None:
     """Build a deployable model bundle."""
     try:
         build_bundle(detector, recognizer, config, output)
@@ -470,7 +470,7 @@ def cli_bundle_build(
 @bundle_app.command("verify")
 def cli_bundle_verify(
     bundle_dir: str = typer.Argument(..., help="Path to bundle directory"),
-):
+) -> None:
     """Verify a deployable model bundle."""
     try:
         verify_bundle(bundle_dir)
@@ -482,7 +482,7 @@ def cli_bundle_verify(
 @bundle_app.command("inspect")
 def cli_bundle_inspect(
     bundle_dir: str = typer.Argument(..., help="Path to bundle directory"),
-):
+) -> None:
     """Inspect a deployable model bundle."""
     # Dummy inspect command for now to satisfy CLI structure reqs
     typer.echo(f"Inspecting bundle at {bundle_dir}...")
@@ -509,8 +509,8 @@ from container_id.runtime.pipeline import RuntimePipeline
 def cli_infer_image(
     input: str = typer.Option(..., help="Path to input image."),
     models: str = typer.Option(..., help="Path to model bundle directory."),
-    output: str = typer.Option(None, help="Path to output JSON result."),
-):
+    output: str | None = typer.Option(None, help="Path to output JSON result."),
+) -> None:
     """Run inference on a single image."""
     try:
         pipeline = RuntimePipeline(models)
@@ -534,7 +534,7 @@ def cli_infer_directory(
     models: str = typer.Option(..., help="Path to model bundle directory."),
     recursive: bool = typer.Option(False, help="Search directory recursively."),
     output: str = typer.Option(..., help="Path to output JSONL file."),
-):
+) -> None:
     """Run inference on a directory of images."""
     try:
         pipeline = RuntimePipeline(models)
@@ -553,8 +553,8 @@ def cli_infer_video(
     input: str = typer.Option(..., help="Path to input video mp4."),
     models: str = typer.Option(..., help="Path to model bundle directory."),
     output: str = typer.Option(..., help="Path to output events.jsonl file."),
-    fps: float = typer.Option(None, help="Target processing frame rate."),
-):
+    fps: float | None = typer.Option(None, help="Target processing frame rate."),
+) -> None:
     """Run inference, tracking, and consensus on a video file."""
     try:
         process_video(input, output, models, fps)
@@ -573,7 +573,7 @@ from container_id.streams.rtsp import RTSPRunner
 def cli_rtsp_run(
     models: str = typer.Option(..., help="Path to model bundle directory."),
     config: str = typer.Option(..., help="Path to RTSP yaml config."),
-):
+) -> None:
     """Run the RTSP streaming inference pipeline."""
     try:
         runner = RTSPRunner(config_path=config, models_dir=models)

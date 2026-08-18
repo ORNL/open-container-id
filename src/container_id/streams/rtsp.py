@@ -16,10 +16,10 @@ from container_id.streams.queue import LatestFrameQueue
 logger = logging.getLogger(__name__)
 
 
-def redact_uri(uri: str) -> str:
+def redact_uri(uri: str | None) -> str:
     """Redact credentials from RTSP URI for logging."""
     if not uri:
-        return uri
+        return str(uri)
     # Pattern: rtsp://user:pass@host... -> rtsp://user:***@host...
     return re.sub(r"(rtsp://[^:]+:)[^@]+(@)", r"\1***\2", uri)
 
@@ -44,7 +44,7 @@ class RTSPRunner:
         if not self.uri:
             raise ValueError(f"Environment variable {uri_env_var} not set or empty.")
 
-    def _producer_thread(self):
+    def _producer_thread(self) -> None:
         try:
             import av
         except ImportError:
@@ -53,7 +53,7 @@ class RTSPRunner:
             return
 
         reconnect_conf = self.config.camera.reconnect
-        delay = reconnect_conf.initial_delay_seconds
+        delay = float(reconnect_conf.initial_delay_seconds)
 
         # Options for av.open
         options = {
@@ -69,12 +69,13 @@ class RTSPRunner:
                 stream = container.streams.video[0]
 
                 # Reset delay on successful connection
-                delay = reconnect_conf.initial_delay_seconds
+                delay = float(reconnect_conf.initial_delay_seconds)
                 logger.info("Connected.")
 
                 # Decoding loop
                 if stream.average_rate and stream.average_rate > 0 and self.fps > 0:
                     stream_fps = float(stream.average_rate)
+
                     if self.fps < stream_fps:
                         # calculate how many frames to skip approximately
                         pass  # PyAV timestamps are better.
@@ -121,7 +122,7 @@ class RTSPRunner:
                     except Exception:  # noqa: BLE001, S110
                         pass
 
-    def _consumer_thread(self):
+    def _consumer_thread(self) -> None:
         pipeline = RuntimePipeline(str(self.models_dir))
         tracker = IoUTracker(iou_threshold=0.30, max_missed_frames=10)
         consensus = ConsensusEngine(camera_id=self.camera_id)
@@ -151,7 +152,7 @@ class RTSPRunner:
                 except Exception as e:  # noqa: BLE001
                     logger.error(f"Consumer inference error: {e}")
 
-    def run(self):
+    def run(self) -> None:
         logger.info(f"Starting RTSP Runner for camera {self.camera_id}")
         self.running = True
 

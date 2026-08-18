@@ -1,6 +1,7 @@
 import json
 import logging
 from pathlib import Path
+from typing import Any
 
 import cv2
 import numpy as np
@@ -30,7 +31,7 @@ class RuntimePipeline:
         self.detector = ONNXDetector(self.bundle_dir)
         self.recognizer = ONNXRecognizer(self.bundle_dir)
 
-    def process_frame(self, image: np.ndarray) -> dict:
+    def process_frame(self, image: np.ndarray) -> dict[str, Any]:
         """
         Process a single image frame, running detection and OCR.
         Returns a dict representing the structured result.
@@ -124,7 +125,7 @@ class RuntimePipeline:
             "elapsed_ms": 0.0,  # Time tracking not implemented
         }
 
-    def infer_image(self, image_path: str, output_path: str | None = None) -> dict:
+    def infer_image(self, image_path: str, output_path: str | None = None) -> dict[str, Any]:
         img = cv2.imread(image_path)
         if img is None:
             raise ValueError(f"Could not read image: {image_path}")
