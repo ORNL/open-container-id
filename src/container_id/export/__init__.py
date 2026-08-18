@@ -8,7 +8,7 @@ app = typer.Typer(help="Export commands.")
 @app.command("detector")
 def cli_export_detector(
     run_dir: str = typer.Option(..., help="Path to the training run directory."),
-):
+) -> None:
     """Export the detector model to ONNX."""
     try:
         export_detector(run_dir)
@@ -24,7 +24,7 @@ from container_id.export.recognizer import export_recognizer
 @app.command("ocr")
 def cli_export_ocr(
     run_dir: str = typer.Option(..., help="Path to the training run directory."),
-):
+) -> None:
     """Export the OCR recognizer model to ONNX."""
     try:
         export_recognizer(run_dir)

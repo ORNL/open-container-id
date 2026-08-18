@@ -4,6 +4,7 @@ import random
 import re
 import threading
 import time
+import typing
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -16,10 +17,10 @@ from container_id.streams.queue import LatestFrameQueue
 logger = logging.getLogger(__name__)
 
 
-def redact_uri(uri: str) -> str:
+def redact_uri(uri: str | None) -> str:
     """Redact credentials from RTSP URI for logging."""
     if not uri:
-        return uri
+        return str(uri)
     # Pattern: rtsp://user:pass@host... -> rtsp://user:***@host...
     return re.sub(r"(rtsp://[^:]+:)[^@]+(@)", r"\1***\2", uri)
 
@@ -44,7 +45,7 @@ class RTSPRunner:
         if not self.uri:
             raise ValueError(f"Environment variable {uri_env_var} not set or empty.")
 
-    def _producer_thread(self):
+    def _producer_thread(self) -> None:
         try:
             import av
         except ImportError:
@@ -53,7 +54,7 @@ class RTSPRunner:
             return
 
         reconnect_conf = self.config.camera.reconnect
-        delay = reconnect_conf.initial_delay_seconds
+        delay = float(reconnect_conf.initial_delay_seconds)
 
         # Options for av.open
         options = {
@@ -62,20 +63,22 @@ class RTSPRunner:
         }
 
         while self.running:
-            container = None
+            container: av.container.InputContainer | None = None
             try:
                 logger.info(f"Connecting to {redact_uri(self.uri)}...")
-                container = av.open(self.uri, options=options)
+                container = typing.cast(av.container.InputContainer, av.open(self.uri, options=options))
+                if container is None:
+                    continue
                 stream = container.streams.video[0]
 
                 # Reset delay on successful connection
-                delay = reconnect_conf.initial_delay_seconds
+                delay = float(reconnect_conf.initial_delay_seconds)
                 logger.info("Connected.")
 
                 # Decoding loop
-                frame_interval_pts = 0
                 if stream.average_rate and stream.average_rate > 0 and self.fps > 0:
                     stream_fps = float(stream.average_rate)
+
                     if self.fps < stream_fps:
                         # calculate how many frames to skip approximately
                         pass  # PyAV timestamps are better.
@@ -83,14 +86,15 @@ class RTSPRunner:
                 last_processed_time = time.monotonic()
                 target_interval = 1.0 / self.fps if self.fps > 0 else 0
 
+                if container is None:
+                    break
                 for frame in container.decode(stream):
                     if not self.running:
                         break
 
                     now = time.monotonic()
-                    if target_interval > 0:
-                        if (now - last_processed_time) < target_interval:
-                            continue
+                    if target_interval > 0 and (now - last_processed_time) < target_interval:
+                        continue
 
                     last_processed_time = now
 
@@ -120,10 +124,10 @@ class RTSPRunner:
                 if container:
                     try:
                         container.close()
-                    except Exception:  # noqa: BLE001
+                    except Exception:  # noqa: BLE001, S110
                         pass
 
-    def _consumer_thread(self):
+    def _consumer_thread(self) -> None:
         pipeline = RuntimePipeline(str(self.models_dir))
         tracker = IoUTracker(iou_threshold=0.30, max_missed_frames=10)
         consensus = ConsensusEngine(camera_id=self.camera_id)
@@ -153,7 +157,7 @@ class RTSPRunner:
                 except Exception as e:  # noqa: BLE001
                     logger.error(f"Consumer inference error: {e}")
 
-    def run(self):
+    def run(self) -> None:
         logger.info(f"Starting RTSP Runner for camera {self.camera_id}")
         self.running = True
 

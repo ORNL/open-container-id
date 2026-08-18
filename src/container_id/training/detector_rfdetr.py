@@ -55,7 +55,7 @@ class DetectorTrainConfig(BaseModel):
 
 def write_run_manifest(
     run_dir: Path,
-    config: dict,
+    config: dict[str, Any],
     start_time: datetime,
     end_time: datetime | None,
     status: str,
@@ -110,12 +110,12 @@ def write_run_manifest(
         json.dump(manifest, f, indent=2)
 
 
-def get_rfdetr_model(variant: str, num_classes: int, pretrained: bool):
+def get_rfdetr_model(variant: str, num_classes: int, pretrained: bool) -> Any:
     from rfdetr import RFDETRLarge, RFDETRMedium, RFDETRNano, RFDETRSmall
 
     variant = variant.lower()
     if variant == "nano":
-        model = RFDETRNano(num_classes=num_classes)
+        model: Any = RFDETRNano(num_classes=num_classes)
     elif variant == "small":
         model = RFDETRSmall(num_classes=num_classes)
     elif variant == "medium":

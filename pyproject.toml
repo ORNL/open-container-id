@@ -6,7 +6,11 @@ version = "0.1.0"
 description = "Open source container identification system."
 readme = "README.md"
 authors = []
-dependencies = []
+dependencies = [
+  "pillow>=9.0",
+  "imagehash>=4.0",
+  "tqdm>=4.0",
+]
 
 [project.scripts]
 container-id = "container_id.cli:app"
@@ -15,6 +19,7 @@ container-id = "container_id.cli:app"
 runtime = [
   "numpy",
   "opencv-python-headless",
+  "opencv-python",
   "onnxruntime",
   "pydantic>=2",
   "pydantic-settings",

@@ -71,7 +71,7 @@ class OcrTrainConfig(BaseModel):
 
 def write_run_manifest(
     run_dir: Path,
-    config: dict,
+    config: dict[str, Any],
     start_time: datetime,
     end_time: datetime | None,
     status: str,
@@ -123,7 +123,7 @@ def write_run_manifest(
         json.dump(manifest, f, indent=2)
 
 
-def get_doctr_model(architecture: str, pretrained: bool, vocab: str):
+def get_doctr_model(architecture: str, pretrained: bool, vocab: str) -> Any:
     from doctr.models import recognition
 
     # DocTR recognition models builder
