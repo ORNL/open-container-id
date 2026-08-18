@@ -2,6 +2,7 @@ import json
 import logging
 from collections.abc import Sequence
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 
@@ -49,7 +50,7 @@ class ONNXDetector:
             self.input_name = self.session.get_inputs()[0].name
             # Some RF-DETR exports have two inputs (images, orig_target_sizes), handle basic single input for now unless needed.
 
-    def _preprocess(self, image: np.ndarray) -> tuple[np.ndarray, dict]:
+    def _preprocess(self, image: np.ndarray) -> tuple[np.ndarray, dict[str, Any]]:
         import cv2
 
         h, w = image.shape[:2]
@@ -92,11 +93,11 @@ class ONNXDetector:
             "orig_w": w,
         }
 
-    def _postprocess(self, outputs, meta: dict) -> list[Detection]:
+    def _postprocess(self, outputs: list[np.ndarray] | None, meta: dict[str, Any]) -> list[Detection]:
         # Simple mock output decoding for RFDETR standard format [batch, num_queries, 6 (x,y,w,h,conf,class)]
         # or [batch, num_queries, 4 (bbox) + num_classes (logits)]
 
-        detections = []
+        detections: list[Detection] = []
         if self._is_mock:
             # Return a fake detection for testing
             return [
@@ -112,7 +113,7 @@ class ONNXDetector:
         # Since this is an MVP without the real ONNX model to verify against, we'll write a generic box unscaler.
         return detections
 
-    def _unscale_boxes(self, boxes_xyxy: np.ndarray, meta: dict) -> np.ndarray:
+    def _unscale_boxes(self, boxes_xyxy: np.ndarray, meta: dict[str, Any]) -> np.ndarray:
         # Scale back to original image
         boxes = boxes_xyxy.copy()
         boxes[:, [0, 2]] -= meta["pad_left"]

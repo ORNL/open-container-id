@@ -5,7 +5,7 @@ from pathlib import Path
 
 import numpy as np
 
-from container_id.iso6346.candidates import score_candidate
+from container_id.iso6346.candidates import parse_candidate, score_candidate
 from container_id.iso6346.check_digit import validate_check_digit
 from container_id.iso6346.normalize import normalize_container_number
 from container_id.runtime.interfaces import OCRCandidate
@@ -111,7 +111,7 @@ class ONNXRecognizer:
         conf = float(conf_sum / max(count, 1))
         return text, conf
 
-    def _postprocess(self, outputs) -> list[OCRCandidate]:
+    def _postprocess(self, outputs: list[np.ndarray] | None) -> list[OCRCandidate]:
         if self._is_mock:
             # Generate a mock successful candidate
             raw = "BMOU4445146"
@@ -127,6 +127,8 @@ class ONNXRecognizer:
                 )
             ]
 
+        if outputs is None:
+            return []
         logits = outputs[0]  # [batch, seq_len, num_classes]
         candidates = []
 
@@ -137,7 +139,8 @@ class ONNXRecognizer:
 
             # Simple ISO evaluation based on parsed logic
             # Score candidate returns status, but we can do a quick check here.
-            _score = score_candidate(norm_text)
+            parsed = parse_candidate(norm_text)
+            _score = score_candidate(parsed) if parsed else 0.0
 
             check_digit_valid = False
             structure_valid = False
@@ -164,7 +167,7 @@ class ONNXRecognizer:
         return candidates
 
     def recognize(self, crops: Sequence[np.ndarray]) -> list[list[OCRCandidate]]:
-        results = []
+        results: list[list[OCRCandidate]] = []
 
         if not crops:
             return results

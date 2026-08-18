@@ -1294,6 +1294,11 @@ wheels = [
 name = "open-container-id"
 version = "0.1.0"
 source = { editable = "." }
+dependencies = [
+    { name = "imagehash" },
+    { name = "pillow" },
+    { name = "tqdm" },
+]
 
 [package.optional-dependencies]
 api = [
@@ -1325,6 +1330,7 @@ runtime = [
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "numpy", version = "2.5.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "onnxruntime" },
+    { name = "opencv-python" },
     { name = "opencv-python-headless" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
@@ -1350,13 +1356,16 @@ requires-dist = [
     { name = "fastapi", marker = "extra == 'api'" },
     { name = "httpx", marker = "extra == 'dev'" },
     { name = "httpx", marker = "extra == 'runtime'" },
+    { name = "imagehash", specifier = ">=4.0" },
     { name = "imagehash", marker = "extra == 'train'" },
     { name = "mypy", marker = "extra == 'dev'" },
     { name = "numpy", marker = "extra == 'runtime'" },
     { name = "onnx", marker = "extra == 'export'" },
     { name = "onnxruntime", marker = "extra == 'export'" },
     { name = "onnxruntime", marker = "extra == 'runtime'" },
+    { name = "opencv-python", marker = "extra == 'runtime'" },
     { name = "opencv-python-headless", marker = "extra == 'runtime'" },
+    { name = "pillow", specifier = ">=9.0" },
     { name = "pip-audit", marker = "extra == 'dev'" },
     { name = "pre-commit", marker = "extra == 'dev'" },
     { name = "prometheus-client", marker = "extra == 'api'" },
@@ -1375,6 +1384,7 @@ requires-dist = [
     { name = "tensorboard", marker = "extra == 'train'" },
     { name = "torch", marker = "extra == 'train'" },
     { name = "torchvision", marker = "extra == 'train'" },
+    { name = "tqdm", specifier = ">=4.0" },
     { name = "typer", marker = "extra == 'runtime'" },
     { name = "types-pyyaml", marker = "extra == 'dev'" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'api'" },

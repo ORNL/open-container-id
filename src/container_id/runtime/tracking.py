@@ -50,7 +50,7 @@ class Track:
         self.current_consensus: str | None = None
         self.emitted_event: bool = False
 
-    def update(self, box: tuple[float, float, float, float], timestamp: datetime):
+    def update(self, box: tuple[float, float, float, float], timestamp: datetime) -> None:
         self.last_box = box
         self.last_timestamp = timestamp
         self.missed_frames = 0
@@ -58,7 +58,7 @@ class Track:
 
 class TrackerInterface(Protocol):
     def update(
-        self, detections: list[dict], current_timestamp: datetime
+        self, detections: list[dict[str, Any]], current_timestamp: datetime
     ) -> list[Track]: ...
 
 
@@ -69,7 +69,7 @@ class IoUTracker:
         self.tracks: list[Track] = []
 
     def update(
-        self, detections: list[dict], current_timestamp: datetime
+        self, detections: list[dict[str, Any]], current_timestamp: datetime
     ) -> list[Track]:
         """
         Takes a list of generic detection dicts:
