@@ -119,7 +119,7 @@ class RTSPRunner:
                     try:
                         container.close()
                     except Exception:  # noqa: BLE001
-                        logger.warning("Failed to close container")
+                        pass
 
     def _consumer_thread(self):
         pipeline = RuntimePipeline(str(self.models_dir))
