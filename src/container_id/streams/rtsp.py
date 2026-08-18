@@ -4,6 +4,7 @@ import random
 import re
 import threading
 import time
+import typing
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -65,7 +66,9 @@ class RTSPRunner:
             container: av.container.InputContainer | None = None
             try:
                 logger.info(f"Connecting to {redact_uri(self.uri)}...")
-                container = av.open(self.uri, options=options)
+                container = typing.cast(av.container.InputContainer, av.open(self.uri, options=options))
+                if container is None:
+                    continue
                 stream = container.streams.video[0]
 
                 # Reset delay on successful connection
@@ -83,6 +86,8 @@ class RTSPRunner:
                 last_processed_time = time.monotonic()
                 target_interval = 1.0 / self.fps if self.fps > 0 else 0
 
+                if container is None:
+                    break
                 for frame in container.decode(stream):
                     if not self.running:
                         break
