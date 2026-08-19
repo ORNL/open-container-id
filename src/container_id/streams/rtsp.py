@@ -122,7 +122,9 @@ class RTSPRunner:
                     )
             finally:
                 if container:
-                    try:
+                    import contextlib
+
+                    with contextlib.suppress(Exception):
                         container.close()
                     except Exception:  # noqa: BLE001, S110
                         pass
